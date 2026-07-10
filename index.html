@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d302c">
+  <meta name="description" content="Interaktivní 10denní itinerář dobrodružné cesty Kyrgyzstánem pro tři kamarády.">
+  <title>Kyrgyzstán · 10 dní mezi nebem a stepí</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #13201d;
+      --muted: #64716d;
+      --forest: #0d302c;
+      --forest-2: #17443e;
+      --cream: #f5f1e8;
+      --paper: #fffdf8;
+      --gold: #e9aa45;
+      --gold-light: #f8e7c5;
+      --lake: #3c8c92;
+      --lake-light: #dceeee;
+      --rust: #ba5c3e;
+      --line: #dcded8;
+      --shadow: 0 22px 70px rgba(23, 49, 44, .11);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+      opacity: .14;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    img { max-width: 100%; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .reveal-item { transition: opacity .7s ease, transform .7s cubic-bezier(.2,.75,.25,1); }
+    body.motion-ready .reveal-item { opacity: 0; transform: translateY(22px); }
+    body.motion-ready .reveal-item.is-visible { opacity: 1; transform: none; }
+
+    .nav-wrap {
+      position: absolute;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    nav {
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,.16);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-family: Manrope, sans-serif; font-weight: 800; }
+    .brand-mark {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--gold); color: var(--forest);
+    }
+    .brand-mark svg { width: 23px; }
+    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .nav-links a { text-decoration: none; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.78); transition: .2s ease; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      border: 1px solid rgba(255,255,255,.45); border-radius: 100px;
+      padding: 11px 17px; color: #fff !important; backdrop-filter: blur(8px);
+    }
+    .menu-btn { display: none; background: none; border: 0; color: white; padding: 8px; }
+
+    .hero {
+      min-height: 780px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      color: white;
+      overflow: hidden;
+      background: #173d38;
+    }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(4,20,18,.22) 0%, rgba(7,31,28,.17) 38%, rgba(6,27,24,.9) 100%),
+        url("https://images.pexels.com/photos/35755655/pexels-photo-35755655.jpeg?auto=compress&cs=tinysrgb&w=2200");
+      background-size: cover;
+      background-position: center calc(45% + var(--hero-shift, 0px));
+      transform: scale(1.01);
+      transition: transform 2s cubic-bezier(.2,.7,.2,1), filter 1.2s ease;
+    }
+    .hero::after {
+      content: ""; position: absolute; inset: auto 0 0; height: 220px;
+      background: linear-gradient(transparent, rgba(13,48,44,.32));
+    }
+    .hero-content { position: relative; z-index: 2; padding: 180px 0 82px; width: 100%; }
+    .eyebrow {
+      margin: 0 0 22px; display: flex; align-items: center; gap: 11px;
+      text-transform: uppercase; letter-spacing: .18em; font-size: 12px; font-weight: 700;
+    }
+    .eyebrow::before { content: ""; width: 31px; height: 2px; background: var(--gold); }
+    h1 { margin: 0; max-width: 810px; font-family: Manrope, sans-serif; font-size: clamp(48px, 7.4vw, 92px); line-height: .98; letter-spacing: -.06em; }
+    .hero-lower { margin-top: 42px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+    .hero-copy { max-width: 570px; font-size: 18px; line-height: 1.65; color: rgba(255,255,255,.78); }
+    .hero-actions { display: flex; gap: 12px; flex-shrink: 0; }
+    .btn {
+      border: 0; border-radius: 100px; padding: 15px 21px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      text-decoration: none; font-weight: 700; font-size: 14px; transition: .25s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--gold); color: var(--forest); }
+    .btn-ghost { color: white; border: 1px solid rgba(255,255,255,.42); background: rgba(255,255,255,.08); backdrop-filter: blur(10px); }
+    .btn svg { width: 17px; height: 17px; }
+    .hero-stats {
+      position: relative; z-index: 3;
+      border-top: 1px solid rgba(255,255,255,.18);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .hero-stat { padding: 25px 0 3px; border-right: 1px solid rgba(255,255,255,.18); }
+    .hero-stat:not(:first-child) { padding-left: 30px; }
+    .hero-stat:last-child { border: 0; }
+    .hero-stat b { display: block; font: 700 23px Manrope, sans-serif; }
+    .hero-stat span { font-size: 12px; text-transform: uppercase; letter-spacing: .13em; color: rgba(255,255,255,.55); }
+    body.motion-ready nav, body.motion-ready .hero .eyebrow, body.motion-ready .hero h1, body.motion-ready .hero-lower, body.motion-ready .hero-stats { opacity: 0; transform: translateY(16px); }
+    body.motion-active nav, body.motion-active .hero .eyebrow, body.motion-active .hero h1, body.motion-active .hero-lower, body.motion-active .hero-stats { opacity: 1; transform: none; transition: opacity .75s ease, transform .75s cubic-bezier(.2,.75,.25,1); }
+    body.motion-active .hero h1 { transition-delay: .1s; }
+    body.motion-active .hero-lower { transition-delay: .2s; }
+    body.motion-active .hero-stats { transition-delay: .32s; }
+    body.motion-active .hero::before { transform: scale(1.055); }
+
+    .intro { padding: 110px 0 80px; }
+    .section-kicker { color: var(--rust); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .18em; margin-bottom: 15px; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 44px; }
+    .section-head h2 { margin: 0; font: 700 clamp(36px, 5vw, 58px)/1.04 Manrope, sans-serif; letter-spacing: -.045em; max-width: 720px; }
+    .section-head p { margin: 0; max-width: 390px; line-height: 1.7; color: var(--muted); }
+    .intro-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; }
+    .story-card {
+      position: relative; min-height: 390px; border-radius: var(--radius); overflow: hidden; padding: 36px;
+      display: flex; flex-direction: column; justify-content: flex-end; color: white;
+      background: linear-gradient(0deg, rgba(7,32,29,.88), rgba(7,32,29,.05)), url("https://images.pexels.com/photos/35732875/pexels-photo-35732875.jpeg?auto=compress&cs=tinysrgb&w=1400") center/cover;
+      box-shadow: var(--shadow);
+      transition: transform .4s ease, box-shadow .4s ease;
+    }
+    .story-card:hover { transform: translateY(-4px); box-shadow: 0 28px 76px rgba(23,49,44,.16); }
+    .story-card h3 { font: 700 31px/1.1 Manrope, sans-serif; margin: 9px 0 10px; letter-spacing: -.03em; }
+    .story-card p { margin: 0; color: rgba(255,255,255,.72); max-width: 520px; line-height: 1.6; }
+    .story-label { display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; font-weight: 700; }
+    .feature-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .feature-card { background: var(--paper); border: 1px solid rgba(23,49,44,.08); border-radius: var(--radius); padding: 27px; box-shadow: 0 12px 35px rgba(23,49,44,.06); transition: transform .3s ease, box-shadow .3s ease; }
+    .feature-card:hover { transform: translateY(-5px); box-shadow: 0 20px 46px rgba(23,49,44,.1); }
+    .feature-icon { width: 46px; height: 46px; border-radius: 15px; background: var(--gold-light); display: grid; place-items: center; margin-bottom: 37px; color: #9a5c18; }
+    .feature-icon.blue { background: var(--lake-light); color: var(--lake); }
+    .feature-icon svg { width: 22px; height: 22px; }
+    .feature-card strong { display: block; font: 700 21px Manrope, sans-serif; margin-bottom: 8px; }
+    .feature-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    .route-section { padding: 55px 0 110px; }
+    .route-layout { display: grid; grid-template-columns: 390px 1fr; min-height: 630px; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow); background: var(--forest); }
+    .route-panel { color: white; padding: 34px; display: flex; flex-direction: column; min-width: 0; }
+    .route-panel h2 { font: 700 36px Manrope, sans-serif; letter-spacing: -.04em; margin: 8px 0 8px; }
+    .route-panel > p { margin: 0 0 26px; color: rgba(255,255,255,.58); line-height: 1.5; font-size: 14px; }
+    .day-picker { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 18px; }
+    .day-picker::-webkit-scrollbar { display: none; }
+    .day-dot { flex: 0 0 39px; height: 39px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: transparent; color: rgba(255,255,255,.7); font-weight: 700; transition: .2s; }
+    .day-dot:hover, .day-dot.active { background: var(--gold); border-color: var(--gold); color: var(--forest); }
+    .route-detail { border-top: 1px solid rgba(255,255,255,.13); padding-top: 26px; min-height: 260px; }
+    .route-meta { color: var(--gold); text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700; }
+    .route-detail h3 { margin: 9px 0 10px; font: 700 25px Manrope, sans-serif; letter-spacing: -.025em; }
+    .route-detail p { margin: 0; color: rgba(255,255,255,.68); font-size: 14px; line-height: 1.7; }
+    .route-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin-top: 22px; }
+    .route-fact { padding: 13px 14px; border-radius: 13px; background: rgba(255,255,255,.07); }
+    .route-fact span { display: block; color: rgba(255,255,255,.43); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+    .route-fact strong { font-size: 13px; }
+    .route-hint { margin-top: auto; color: rgba(255,255,255,.42); font-size: 11px; display: flex; align-items: center; gap: 8px; }
+    #map { min-height: 630px; background: #dce7e1; position: relative; overflow: hidden; z-index: 1; cursor: grab; touch-action: none; contain: layout paint; }
+    #map.dragging { cursor: grabbing; }
+    .map-stage, .route-svg { width: 100%; height: 100%; min-height: 630px; display: block; }
+    .route-svg { user-select: none; }
+    .map-viewport { transform-origin: 0 0; }
+    .map-grid { stroke: #66847a; stroke-width: .7; opacity: .12; stroke-dasharray: 2 7; }
+    .terrain-line { fill: none; stroke: #809b8f; stroke-width: 1.2; opacity: .19; }
+    .country-shape { fill: rgba(255,255,255,.34); stroke: rgba(43,80,70,.22); stroke-width: 2; }
+    .water-shape { fill: url(#lakeGradient); stroke: rgba(35,116,124,.34); stroke-width: 1.5; }
+    .map-label { fill: #60756d; font: 600 12px "DM Sans", sans-serif; letter-spacing: .03em; }
+    .map-label.small { font-size: 10px; fill: #789087; }
+    .region-label { fill: #81978f; font: 700 9px "DM Sans", sans-serif; letter-spacing: .17em; }
+    .mountain-ridge { fill: url(#mountainGradient); opacity: .45; }
+    .mountain-line { fill: none; stroke: #6c887e; stroke-width: 1; opacity: .32; }
+    .river { fill: none; stroke: #65a3aa; stroke-width: 2; opacity: .58; stroke-linecap: round; }
+    .main-road-casing { fill: none; stroke: rgba(255,255,255,.75); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+    .main-road { fill: none; stroke: #d0a85e; stroke-width: 2; opacity: .7; stroke-dasharray: 5 3; stroke-linecap: round; }
+    .road-label { fill: #9b7b43; font: 700 8px "DM Sans", sans-serif; paint-order: stroke; stroke: #e7eee9; stroke-width: 3; }
+    .settlement circle { fill: #f8f4e9; stroke: #54736a; stroke-width: 2; }
+    .settlement.capital circle { fill: var(--gold); stroke: var(--forest); }
+    .settlement text { fill: #526a63; font: 700 9px "DM Sans", sans-serif; paint-order: stroke; stroke: rgba(237,243,239,.95); stroke-width: 4; }
+    .peak path { fill: #789088; opacity: .8; }
+    .peak text { fill: #71877f; font: 600 8px "DM Sans", sans-serif; }
+    .overview-route { fill: none; stroke: #6e8980; stroke-width: 2; opacity: .15; stroke-linecap: round; stroke-linejoin: round; }
+    .active-route-casing { fill: none; stroke: white; stroke-width: 10; opacity: .82; stroke-linecap: round; stroke-linejoin: round; animation: routeFade .85s cubic-bezier(.22,.65,.3,1) both; }
+    .active-route { fill: none; stroke: var(--rust); stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; animation: routeFade .85s cubic-bezier(.22,.65,.3,1) both; }
+    .active-route.trek { stroke-dasharray: 11 8; }
+    @keyframes routeFade { from { opacity: 0; } to { opacity: 1; } }
+    .route-marker { cursor: pointer; }
+    .route-marker circle { fill: var(--forest); stroke: white; stroke-width: 4; transition: r .35s cubic-bezier(.2,.7,.25,1), stroke .35s ease; }
+    .route-marker.end circle { fill: var(--gold); }
+    .route-marker:hover circle { r: 13; }
+    .route-marker text.number { fill: white; font: 800 10px Manrope, sans-serif; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+    .route-marker.end text.number { fill: var(--forest); }
+    .route-marker text.place { fill: var(--ink); font: 700 12px "DM Sans", sans-serif; paint-order: stroke; stroke: rgba(255,255,255,.92); stroke-width: 5; stroke-linejoin: round; pointer-events: none; }
+    .route-marker { animation: markerPop .68s cubic-bezier(.16,.72,.25,1) both; transform-box: fill-box; transform-origin: center; }
+    .route-marker:focus { outline: none; }
+    .route-marker:focus circle { stroke: var(--gold); stroke-width: 6; }
+    @keyframes markerPop { from { opacity: 0; scale: .72; } to { opacity: 1; scale: 1; } }
+    .map-controls { position: absolute; z-index: 5; right: 18px; top: 18px; display: grid; gap: 7px; }
+    .map-control { width: 40px; height: 40px; border: 0; border-radius: 11px; display: grid; place-items: center; background: rgba(255,253,248,.94); color: var(--forest); box-shadow: 0 7px 22px rgba(13,48,44,.14); font-size: 20px; font-weight: 700; transition: .2s; }
+    .map-control:hover { background: white; transform: translateY(-1px); }
+    .map-control svg { width: 18px; height: 18px; }
+    .map-legend { position: absolute; z-index: 4; left: 18px; bottom: 17px; padding: 9px 12px; border-radius: 11px; background: rgba(255,253,248,.9); color: #61716c; box-shadow: 0 6px 20px rgba(13,48,44,.1); font-size: 10px; pointer-events: none; backdrop-filter: blur(8px); }
+    .map-legend i { display: inline-block; width: 20px; height: 3px; margin: 0 6px 2px 0; border-radius: 2px; background: var(--rust); }
+    .map-day-chip { position: absolute; z-index: 4; top: 18px; left: 18px; max-width: 280px; padding: 11px 14px; border-radius: 13px; background: rgba(13,48,44,.91); color: white; box-shadow: 0 8px 25px rgba(13,48,44,.2); pointer-events: none; backdrop-filter: blur(9px); }
+    .map-day-chip span { display: block; color: var(--gold); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+    .map-day-chip strong { display: block; margin-top: 3px; font: 700 13px Manrope, sans-serif; }
+    .map-elevation { position: absolute; z-index: 4; right: 18px; bottom: 17px; width: 205px; padding: 12px 13px 10px; border-radius: 14px; background: rgba(255,253,248,.92); color: var(--ink); box-shadow: 0 8px 25px rgba(13,48,44,.13); pointer-events: none; backdrop-filter: blur(9px); }
+    .map-elevation-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+    .map-elevation-head span { color: var(--muted); font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .map-elevation-head b { font: 800 11px Manrope, sans-serif; }
+    .elevation-mini { display: block; width: 100%; height: 48px; overflow: visible; }
+    .elevation-area { fill: url(#elevationFillMini); }
+    .elevation-path { fill: none; stroke: var(--rust); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 240; animation: drawProfile 1.15s .18s cubic-bezier(.22,.65,.3,1) both; }
+    @keyframes drawProfile { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
+    .map-place-card { position: absolute; z-index: 7; left: 18px; bottom: 56px; min-width: 190px; max-width: 245px; padding: 14px 38px 14px 15px; border-radius: 14px; background: var(--paper); color: var(--ink); box-shadow: 0 14px 40px rgba(13,48,44,.2); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .25s ease; }
+    .map-place-card.show { opacity: 1; transform: none; pointer-events: auto; }
+    .map-place-card span { color: var(--rust); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+    .map-place-card strong { display: block; margin: 4px 0 2px; font: 700 15px Manrope, sans-serif; }
+    .map-place-card small { color: var(--muted); font-size: 10px; }
+    .place-close { position: absolute; right: 8px; top: 8px; width: 26px; height: 26px; border: 0; border-radius: 50%; background: #eeeae1; color: var(--ink); }
+    .map-compass { position: absolute; z-index: 3; right: 26px; top: 166px; width: 28px; height: 48px; color: #587169; text-align: center; pointer-events: none; }
+    .map-compass b { display: block; font: 800 9px Manrope, sans-serif; letter-spacing: .12em; }
+    .map-compass svg { width: 24px; height: 32px; filter: drop-shadow(0 2px 3px rgba(13,48,44,.12)); }
+
+    .itinerary { padding: 110px 0; background: var(--paper); }
+    .itinerary-toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 38px; }
+    .filter-btn { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 100px; padding: 10px 15px; font-size: 13px; font-weight: 700; }
+    .filter-btn.active, .filter-btn:hover { background: var(--forest); color: white; border-color: var(--forest); }
+    .days-list { border-top: 1px solid var(--line); }
+    .day-card { border-bottom: 1px solid var(--line); transition: background .25s; }
+    .day-card.hidden { display: none; }
+    .day-summary { width: 100%; border: 0; background: transparent; display: grid; grid-template-columns: 110px 1.2fr .8fr 42px; gap: 28px; align-items: center; text-align: left; padding: 29px 12px; color: var(--ink); }
+    .day-card:hover { background: #faf7f0; }
+    .day-num { color: var(--rust); font-size: 12px; text-transform: uppercase; letter-spacing: .14em; font-weight: 800; }
+    .day-title strong { display: block; font: 700 22px Manrope, sans-serif; letter-spacing: -.025em; }
+    .day-title span, .day-transit { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .day-transit { display: flex; align-items: center; gap: 9px; }
+    .day-transit svg { width: 17px; color: var(--lake); flex: 0 0 auto; }
+    .expand-icon { width: 36px; height: 36px; border-radius: 50%; background: #f0ede5; display: grid; place-items: center; transition: .25s; }
+    .expand-icon svg { width: 15px; }
+    .day-card.open .expand-icon { transform: rotate(45deg); background: var(--gold); }
+    .day-detail-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s ease; }
+    .day-card.open .day-detail-wrap { grid-template-rows: 1fr; }
+    .day-detail { overflow: hidden; }
+    .day-detail-inner { margin: 0 12px 28px 122px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 50px; padding: 27px; border-radius: 20px; background: var(--cream); }
+    .schedule { display: grid; gap: 17px; }
+    .schedule-row { display: grid; grid-template-columns: 48px 1fr; gap: 13px; }
+    .schedule-time { color: var(--rust); font-size: 12px; font-weight: 800; padding-top: 2px; }
+    .schedule-row p { margin: 0; font-size: 14px; line-height: 1.55; }
+    .schedule-row p span { color: var(--muted); }
+    .day-notes { padding-left: 26px; border-left: 1px solid var(--line); }
+    .day-notes h4 { margin: 0 0 12px; font: 700 15px Manrope, sans-serif; }
+    .day-notes ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+    .tag { padding: 7px 10px; border-radius: 100px; background: white; font-size: 11px; font-weight: 700; color: var(--forest); }
+
+    .warning { padding: 100px 0; background: var(--forest); color: white; overflow: hidden; position: relative; }
+    .warning::after { content: "3860"; position: absolute; right: -35px; bottom: -85px; font: 800 250px Manrope, sans-serif; color: rgba(255,255,255,.025); letter-spacing: -.09em; }
+    .warning-grid { position: relative; z-index: 1; display: grid; grid-template-columns: .85fr 1.15fr; gap: 80px; align-items: center; }
+    .elevation-art { min-height: 410px; position: relative; display: grid; place-items: center; }
+    .elevation-ring { width: 330px; height: 330px; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; display: grid; place-items: center; position: relative; }
+    .elevation-ring::before, .elevation-ring::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.08); border-radius: 50%; }
+    .elevation-ring::before { inset: 32px; }
+    .elevation-ring::after { inset: 67px; }
+    .mountain-icon { width: 190px; color: var(--gold); }
+    .alt-badge { position: absolute; right: 10px; top: 60px; background: var(--paper); color: var(--forest); border-radius: 50%; width: 94px; height: 94px; display: grid; place-content: center; text-align: center; box-shadow: var(--shadow); }
+    .alt-badge b { font: 800 20px Manrope, sans-serif; }
+    .alt-badge span { font-size: 10px; text-transform: uppercase; color: var(--muted); }
+    .warning h2 { margin: 8px 0 19px; font: 700 46px/1.07 Manrope, sans-serif; letter-spacing: -.045em; }
+    .warning-copy > p { color: rgba(255,255,255,.65); line-height: 1.7; max-width: 580px; }
+    .safety-list { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .safety-item { display: flex; gap: 11px; align-items: flex-start; padding: 14px; border-radius: 14px; background: rgba(255,255,255,.06); font-size: 13px; color: rgba(255,255,255,.76); }
+    .safety-item svg { width: 18px; flex: 0 0 auto; color: var(--gold); }
+
+    .planner { padding: 110px 0; }
+    .planner-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; align-items: start; }
+    .planner-card { background: var(--paper); border: 1px solid rgba(23,49,44,.08); border-radius: var(--radius); padding: 32px; box-shadow: 0 14px 45px rgba(23,49,44,.07); transition: transform .3s ease, box-shadow .3s ease; }
+    .planner-card:hover { transform: translateY(-3px); box-shadow: 0 20px 52px rgba(23,49,44,.1); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 25px; }
+    .card-top h3 { margin: 5px 0 0; font: 700 28px Manrope, sans-serif; letter-spacing: -.035em; }
+    .card-top p { color: var(--muted); margin: 7px 0 0; font-size: 13px; }
+    .progress-ring { --p: 0; width: 67px; height: 67px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--gold) calc(var(--p)*1%), #eeeae1 0); position: relative; }
+    .progress-ring::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--paper); }
+    .progress-ring b { position: relative; font-size: 13px; }
+    .check-list { display: grid; gap: 4px; }
+    .check-item { display: flex; align-items: center; gap: 13px; padding: 12px 10px; border-radius: 11px; cursor: pointer; transition: .2s; }
+    .check-item:hover { background: var(--cream); }
+    .check-item input { position: absolute; opacity: 0; }
+    .fake-check { width: 22px; height: 22px; flex: 0 0 auto; border: 1px solid #b9c0bb; border-radius: 7px; display: grid; place-items: center; color: transparent; transition: .2s; }
+    .fake-check svg { width: 13px; }
+    .check-item input:checked + .fake-check { background: var(--forest); border-color: var(--forest); color: white; }
+    .check-item input:checked ~ span:last-child { color: #959c98; text-decoration: line-through; }
+    .check-item > span:last-child { font-size: 14px; }
+    .budget-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 20px 0 26px; }
+    .field label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: .08em; }
+    .field select { width: 100%; padding: 12px 13px; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--ink); outline: none; }
+    .budget-total { padding: 22px; border-radius: 18px; background: var(--forest); color: white; }
+    .budget-total span { color: rgba(255,255,255,.52); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; }
+    .budget-total strong { display: block; font: 800 34px Manrope, sans-serif; margin-top: 5px; color: var(--gold); }
+    .budget-total small { color: rgba(255,255,255,.5); }
+    .budget-breakdown { display: grid; margin-top: 20px; }
+    .budget-row { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .budget-row span { color: var(--muted); }
+    .budget-note { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 17px 0 0; }
+
+    .sources { padding: 80px 0 100px; background: #ebe6db; }
+    .sources-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 30px; }
+    .source-link { background: rgba(255,255,255,.58); border: 1px solid rgba(23,49,44,.08); border-radius: 17px; padding: 19px; text-decoration: none; transition: .2s; }
+    .source-link:hover { background: white; transform: translateY(-2px); }
+    .source-link span { color: var(--rust); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+    .source-link strong { display: block; margin-top: 6px; font: 700 15px Manrope, sans-serif; }
+
+    footer { padding: 34px 0; color: rgba(255,255,255,.58); background: #08221f; font-size: 12px; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 30px; }
+    .footer-inner b { color: white; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 2000; background: var(--ink); color: white; border-radius: 13px; padding: 13px 18px; font-size: 13px; box-shadow: var(--shadow); opacity: 0; transform: translateY(12px); pointer-events: none; transition: .3s; }
+    .toast.show { opacity: 1; transform: none; }
+
+    @media (max-width: 950px) {
+      .nav-links { display: none; position: absolute; top: 74px; left: 20px; right: 20px; padding: 18px; border-radius: 18px; background: rgba(8,34,31,.96); flex-direction: column; align-items: stretch; gap: 0; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px; }
+      .menu-btn { display: block; }
+      .hero { min-height: 760px; }
+      .hero-lower, .section-head { align-items: flex-start; flex-direction: column; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+      .hero-stat:nth-child(2) { border-right: 0; }
+      .intro-grid, .warning-grid, .planner-grid { grid-template-columns: 1fr; }
+      .route-layout { grid-template-columns: 340px 1fr; }
+      .day-summary { grid-template-columns: 85px 1fr .7fr 42px; gap: 16px; }
+      .day-detail-inner { margin-left: 97px; }
+      .warning-grid { gap: 30px; }
+      .elevation-art { min-height: 340px; }
+      .sources-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .shell { width: min(100% - 28px, 1180px); }
+      nav { height: 72px; }
+      .hero { min-height: 820px; }
+      .hero-content { padding: 150px 0 55px; }
+      h1 { font-size: 50px; }
+      .hero-copy { font-size: 16px; }
+      .hero-lower { margin-top: 28px; }
+      .hero-actions { width: 100%; flex-direction: column; align-items: stretch; }
+      .hero-stat { padding: 18px 10px 3px !important; }
+      .hero-stat:nth-child(odd) { padding-left: 0 !important; }
+      .hero-stat b { font-size: 19px; }
+      .hero-stat span { font-size: 9px; }
+      .intro, .itinerary, .planner { padding: 78px 0; }
+      .section-head { gap: 20px; margin-bottom: 30px; }
+      .section-head h2 { font-size: 38px; }
+      .feature-stack { grid-template-columns: 1fr; }
+      .story-card { min-height: 350px; padding: 27px; }
+      .feature-icon { margin-bottom: 20px; }
+      .route-section { padding: 35px 0 78px; }
+      .route-layout { grid-template-columns: 1fr; }
+      .route-panel { padding: 27px; }
+      #map, .map-stage, .route-svg { min-height: 460px; }
+      .map-day-chip { max-width: 205px; top: 12px; left: 12px; }
+      .map-elevation { width: 170px; right: 12px; bottom: 12px; }
+      .map-legend { display: none; }
+      .map-controls { right: 12px; top: 12px; }
+      .map-place-card { left: 12px; bottom: 12px; max-width: 210px; }
+      .day-summary { grid-template-columns: 62px 1fr 36px; padding: 23px 3px; gap: 10px; }
+      .day-transit { grid-column: 2 / 3; }
+      .expand-icon { grid-column: 3; grid-row: 1 / 3; }
+      .day-title strong { font-size: 19px; }
+      .day-detail-inner { margin: 0 0 22px; padding: 20px; grid-template-columns: 1fr; gap: 26px; }
+      .day-notes { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
+      .warning { padding: 75px 0; }
+      .warning h2 { font-size: 37px; }
+      .safety-list { grid-template-columns: 1fr; }
+      .elevation-ring { width: 285px; height: 285px; }
+      .sources-grid { grid-template-columns: 1fr; }
+      .budget-controls { grid-template-columns: 1fr; }
+      .planner-card { padding: 25px 20px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      body.motion-ready .reveal-item, body.motion-ready nav, body.motion-ready .hero .eyebrow, body.motion-ready .hero h1, body.motion-ready .hero-lower, body.motion-ready .hero-stats { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav-wrap">
+    <nav class="shell" aria-label="Hlavní navigace">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 18 9.1 8.4l3.2 4.5L15.7 7 22 18H3Z" fill="currentColor"/><path d="m7.8 10.5 1.4-2.1 1.4 2" stroke="#fff" stroke-width="1.3"/></svg>
+        </span>
+        <span>KYRGYZSTÁN / 10</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#trasa">Trasa</a>
+        <a href="#itinerar">Itinerář</a>
+        <a href="#priprava">Příprava</a>
+        <a class="nav-cta" href="#rozpocet">Spočítat rozpočet</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Otevřít menu" aria-expanded="false">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-content shell">
+        <p class="eyebrow">10 dní · 3 kamarádi · 1 velká cesta</p>
+        <h1>Mezi nebem<br>a stepí.</h1>
+        <div class="hero-lower">
+          <p class="hero-copy">Od nomádských jurt u Song-Kulu přes tyrkysové Ala-Kul až k teplým pramenům. Intenzivní okruh pro ty, kteří chtějí Kyrgyzstán opravdu zažít.</p>
+          <div class="hero-actions">
+            <a href="#itinerar" class="btn btn-primary">Prozkoumat 10 dní
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 14 0m-6-6 6 6-6 6"/></svg>
+            </a>
+            <a href="#trasa" class="btn btn-ghost">Otevřít mapu</a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><b>~1 050 km</b><span>celkem po zemi</span></div>
+          <div class="hero-stat"><b>45–49 km</b><span>hlavní trek</span></div>
+          <div class="hero-stat"><b>3 860 m</b><span>nejvyšší bod</span></div>
+          <div class="hero-stat"><b>čer–zář</b><span>ideální období</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="section-kicker">Proč tahle trasa</div><h2>Velké hory, minimum hluchých míst.</h2></div>
+          <p>Trasa spojuje dvě nejsilnější horské zkušenosti země a vede přirozeně kolem Issyk-Kulu zpět do Biškeku.</p>
+        </div>
+        <div class="intro-grid">
+          <article class="story-card">
+            <div class="story-label">● Song-Kul · 3 016 m</div>
+            <h3>Noc, kdy je slyšet jen vítr a koně.</h3>
+            <p>Jedna noc v jurtě, půldenní vyjížďka a západ slunce nad jailoo. Krátká zastávka, ale přesně ten obraz, který si z Kyrgyzstánu odvezete.</p>
+          </article>
+          <div class="feature-stack">
+            <article class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 19 9 8l3 5 3-6 6 12H3Z"/><path d="m7.5 10.8 1.6-2.7 1.6 2.7"/></svg>
+              </div>
+              <strong>3 dny na treku</strong>
+              <p>Karakol Valley → Sirota → Ala-Kul Pass → Altyn Arashan → Ak-Suu.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 15c2-2 4-2 6 0s4 2 6 0 4-2 5-1M4 19c2-2 4-2 6 0s4 2 6 0 4-2 5-1"/><circle cx="8" cy="7" r="3"/></svg>
+              </div>
+              <strong>2 horská jezera</strong>
+              <p>Syrový Song-Kul a odpočinkový Issyk-Kul v jednom kompaktním okruhu.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 20c-3-3-4-6-3-9 2 1 4 3 4 6 1-5 4-8 8-10 1 5-1 10-5 13H8Z"/></svg>
+              </div>
+              <strong>Regenerace</strong>
+              <p>Horké prameny Altyn Arashan přijdou přesně po nejtěžším dni.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18h16M5 18 8 7h8l3 11M9 11h6"/></svg>
+              </div>
+              <strong>Červené kaňony</strong>
+              <p>Jeti-Ögüz i Skazka na jednom přejezdu po jižním břehu Issyk-Kulu.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="route-section" id="trasa">
+      <div class="shell">
+        <div class="route-layout">
+          <aside class="route-panel">
+            <div class="section-kicker" style="color: var(--gold)">Interaktivní trasa</div>
+            <h2>10 dní na mapě</h2>
+            <p>Vyberte den. Mapa přiblíží jeho trasu a ukáže klíčová místa.</p>
+            <div class="day-picker" id="dayPicker" aria-label="Výběr dne"></div>
+            <div class="route-detail" id="routeDetail"></div>
+            <div class="route-hint">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5 7-12A7 7 0 0 0 5 9c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2"/></svg>
+              Mapu lze přibližovat a posouvat
+            </div>
+          </aside>
+          <div id="map" role="application" aria-label="Mapa trasy po Kyrgyzstánu"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="itinerary" id="itinerar">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="section-kicker">Den po dni</div><h2>Dobrodružství má svůj rytmus.</h2></div>
+          <p>Kliknutím rozbalte detail dne. Časy jsou orientační a počítají s letními podmínkami.</p>
+        </div>
+        <div class="itinerary-toolbar" id="filters">
+          <button class="filter-btn active" data-filter="all">Všechny dny</button>
+          <button class="filter-btn" data-filter="city">Město & kultura</button>
+          <button class="filter-btn" data-filter="trek">Trek</button>
+          <button class="filter-btn" data-filter="nature">Příroda & odpočinek</button>
+        </div>
+        <div class="days-list" id="daysList"></div>
+      </div>
+    </section>
+
+    <section class="warning">
+      <div class="shell warning-grid">
+        <div class="elevation-art" aria-hidden="true">
+          <div class="elevation-ring">
+            <svg class="mountain-icon" viewBox="0 0 220 150" fill="none"><path d="M15 132 78 40l27 40 23-32 76 84H15Z" stroke="currentColor" stroke-width="3"/><path d="m60 67 18-27 17 25 10-15 15 10" stroke="white" stroke-opacity=".6" stroke-width="3"/></svg>
+            <div class="alt-badge"><b>3 860 m</b><span>Ala-Kul Pass</span></div>
+          </div>
+        </div>
+        <div class="warning-copy">
+          <div class="section-kicker" style="color: var(--gold)">Nejdůležitější poznámka</div>
+          <h2>Hora rozhoduje.<br>Plán B je součást plánu.</h2>
+          <p>Ala-Kul není běžný výlet. Druhý den treku je dlouhý, prudký a ve vysoké nadmořské výšce. Při sněhu, bouřce nebo únavě se vraťte či zvolte Altyn Arashan jako samostatný výlet.</p>
+          <div class="safety-list">
+            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 16H3L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg><span>V Karakolu ověřte stav sněhu, řek a předpověď.</span></div>
+            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10a8 8 0 0 1 16 0v10M4 15h4v5H4m12-5h4v5h-4"/></svg><span>Pro trojici doporučený místní horský průvodce.</span></div>
+            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.9 4.9l2.8 2.8m8.6 8.6 2.8 2.8M2 12h4m12 0h4M4.9 19.1l2.8-2.8m8.6-8.6 2.8-2.8"/><circle cx="12" cy="12" r="4"/></svg><span>Vyrážet za světla, mít offline mapu a rezervu 2–3 h.</span></div>
+            <div class="safety-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v18M18 3v18M6 8h12M6 16h12"/></svg><span>Plnohodnotné boty, vrstvy, nepromok, čelovka a lékárnička.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="planner" id="priprava">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="section-kicker">Před odletem</div><h2>Připraveno je půl cesty.</h2></div>
+          <p>Zaškrtnuté položky zůstanou uložené v tomto prohlížeči.</p>
+        </div>
+        <div class="planner-grid">
+          <article class="planner-card">
+            <div class="card-top">
+              <div><div class="section-kicker">Společný checklist</div><h3>10 věcí před cestou</h3><p>Rozdělte si mezi sebou odpovědnost.</p></div>
+              <div class="progress-ring" id="progressRing"><b id="progressText">0/10</b></div>
+            </div>
+            <div class="check-list" id="checkList"></div>
+          </article>
+
+          <article class="planner-card" id="rozpocet">
+            <div class="card-top">
+              <div><div class="section-kicker">Orientační kalkulačka</div><h3>Rozpočet výpravy</h3><p>Bez mezinárodních letenek.</p></div>
+            </div>
+            <div class="budget-controls">
+              <div class="field"><label for="people">Počet cestovatelů</label><select id="people"><option value="1">1 osoba</option><option value="2">2 osoby</option><option value="3" selected>3 osoby</option><option value="4">4 osoby</option></select></div>
+              <div class="field"><label for="style">Styl cesty</label><select id="style"><option value="0.78">Úsporně</option><option value="1" selected>Vyváženě</option><option value="1.38">Pohodlněji</option></select></div>
+            </div>
+            <div class="budget-total"><span>Odhad celkem</span><strong id="budgetTotal">49 800 Kč</strong><small id="perPerson">16 600 Kč / osoba</small></div>
+            <div class="budget-breakdown" id="budgetBreakdown"></div>
+            <p class="budget-note">Rezerva 15 % je započítaná. Ceny dopravy, průvodců a jurt se mění podle sezóny; potvrďte je přímo před cestou.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources">
+      <div class="shell">
+        <div class="section-kicker">Ověřit před cestou</div>
+        <div class="section-head" style="margin-bottom:0"><h2>Praktické zdroje.</h2><p>Itinerář je realistický rámec, ne náhrada aktuální předpovědi a lokálního doporučení.</p></div>
+        <div class="sources-grid">
+          <a class="source-link" href="https://www.visitkyrgyzstan.org/destinations/song-kul/" target="_blank" rel="noopener"><span>Song-Kul</span><strong>Přístup, jurty a sezóna ↗</strong></a>
+          <a class="source-link" href="https://visitkarakol.com/4_days_ala-kol_tour" target="_blank" rel="noopener"><span>Ala-Kul</span><strong>Trasa přes Altyn Arashan ↗</strong></a>
+          <a class="source-link" href="https://www.openstreetmap.org/#map=7/41.720/75.900" target="_blank" rel="noopener"><span>Offline podklady</span><strong>OpenStreetMap ↗</strong></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner"><div><b>KYRGYZSTÁN / 10</b> · Interaktivní itinerář pro tři kamarády</div><div>Jděte nalehko. Nechte po sobě jen stopy.</div></div>
+  </footer>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const days = [
+      {
+        n: 1, type: 'city', title: 'Přílet do Biškeku', sub: 'Město · aklimatizace · příprava', route: 'Letiště Manas → Biškek', transport: '45 min · taxi', distance: '30 km', sleep: 'Biškek · hotel / hostel', difficulty: 'Lehký start',
+        summary: 'Přistání, srovnání tempa a poslední nákup vybavení. Večer patří centru a společnému briefingu.',
+        coords: [[43.0613, 74.4776], [42.8746, 74.5698]],
+        schedule: [['10:00', 'Přílet a taxi do centra. <span>Vyměňte hotovost a kupte lokální SIM/eSIM.</span>'], ['13:00', 'Oběd a lehká procházka: Ala-Too Square, Oak Park a Osh Bazaar.'], ['17:00', 'Plyn, trail food, hotovost a poslední kontrola výbavy.'], ['20:00', 'Briefing trasy, sdílení offline map a brzký spánek.']],
+        notes: ['Neplánujte dlouhý přejezd hned po nočním letu.', 'V horách počítejte hlavně s hotovostí.', 'Stáhněte mapy pro celou trojici.'], tags: ['SIM', 'zásoby', 'město']
+      },
+      {
+        n: 2, type: 'nature', title: 'Přes Kochkor k Song-Kulu', sub: 'Silnice · jurta · koně', route: 'Biškek → Kochkor → Song-Kul', transport: '6–7 h · minivan + 4×4', distance: '300 km', sleep: 'Song-Kul · jurta', difficulty: 'Střední · 3 016 m',
+        summary: 'Dlouhý, ale vizuálně silný přejezd. Z asfaltu se za Kochkorem vytratí signál i civilizace.',
+        coords: [[42.8746, 74.5698], [42.2156, 75.7566], [41.8352, 75.1505]],
+        schedule: [['07:00', 'Odjezd z Biškeku sdíleným minivanem / soukromým transferem.'], ['10:30', 'Kochkor: čaj, oběd a potvrzení 4×4 i jurty přes CBT.'], ['13:00', 'Výjezd přes horské sedlo k Song-Kulu.'], ['17:00', 'Jurta, krátká vyjížďka na koních a západ slunce.']],
+        notes: ['K jezeru jen s řidičem 4×4.', 'Noc může být kolem nuly i v létě.', 'Na místě obvykle není signál ani bankomat.'], tags: ['jurta', 'koně', '3 016 m']
+      },
+      {
+        n: 3, type: 'nature', title: 'Song-Kul → Karakol', sub: 'Východ slunce · Issyk-Kul · příprava', route: 'Song-Kul → Kochkor → Karakol', transport: '7–8 h · soukromý transfer', distance: '360 km', sleep: 'Karakol · guesthouse', difficulty: 'Dlouhý přejezd',
+        summary: 'Ranní loučení se stepí a přesun na východ. Soukromý transfer šetří nejvíc času pro přípravu treku.',
+        coords: [[41.8352, 75.1505], [42.2156, 75.7566], [42.4778, 78.3956]],
+        schedule: [['06:30', 'Východ slunce a snídaně v jurtě.'], ['08:30', 'Odjezd zpět přes Kochkor a kolem severního břehu Issyk-Kulu.'], ['16:00', 'Příjezd do Karakolu, pozdní oběd a ubytování.'], ['18:00', 'Potvrdit průvodce, předpověď, transfer a výbavu na 3 dny.']],
+        notes: ['Dopravu objednejte předem; veřejná je pomalejší.', 'Přebalte se do jednoho trek batohu.', 'Zbytek věcí nechte v Karakolu.'], tags: ['přejezd', 'Issyk-Kul', 'gear check']
+      },
+      {
+        n: 4, type: 'trek', title: 'Karakol Valley → Sirota', sub: 'Trek 1/3 · les · divoká řeka', route: 'Karakol → trailhead → Sirota Camp', transport: '7–8 h chůze', distance: '18–20 km', sleep: 'Sirota Camp · stan / jurta', difficulty: 'Náročné · +1 050 m',
+        summary: 'První horský den vede údolím Karakol, smrkovým lesem a podél řeky až k jednoduchému táboru Sirota.',
+        coords: [[42.4778, 78.3956], [42.3267, 78.3758], [42.3017, 78.4149]],
+        schedule: [['07:00', 'Transfer z Karakolu k mostu / trailheadu v Karakol Valley.'], ['08:00', 'Start treku nalehko, pozvolné stoupání podél řeky.'], ['13:00', 'Oběd v údolí, doplnění filtrované vody.'], ['17:00', 'Sirota Camp, večeře, příprava vrstev na ranní výstup.']],
+        notes: ['Za vysoké vody mohou být brody obtížné.', 'Nepromokavé uložení spacáku.', 'Usnout brzy – zítra je královská etapa.'], tags: ['trek', 'Sirota', '+1 050 m']
+      },
+      {
+        n: 5, type: 'trek', title: 'Ala-Kul Pass → Altyn Arashan', sub: 'Trek 2/3 · hlavní vrchol cesty', route: 'Sirota → Ala-Kul → pass → Altyn Arashan', transport: '8–10 h chůze', distance: '17–19 km', sleep: 'Altyn Arashan · guesthouse', difficulty: 'Velmi náročné · 3 860 m',
+        summary: 'Nejtěžší i nejkrásnější den: suť, tyrkysové jezero, vysoký průsmyk a dlouhý sestup k horkým pramenům.',
+        coords: [[42.3017, 78.4149], [42.3173, 78.5324], [42.3255, 78.5486], [42.3483, 78.5815], [42.4009, 78.5935]],
+        schedule: [['06:00', 'Start za světla, prudké stoupání k Ala-Kulu (3 532 m).'], ['09:00', 'Jezero a kontrola počasí. Pokračovat jen při bezpečných podmínkách.'], ['11:00', 'Ala-Kul Pass (cca 3 860 m), rychlá pauza a opatrný sestup sutí.'], ['17:00', 'Altyn Arashan, jídlo a soukromá koupel v horkém prameni.']],
+        notes: ['Bezpečnost má přednost před itinerářem.', 'Průsmyk nezkoušejte za bouřky, sněhu nebo mlhy.', 'Počítejte s prudkým sestupem po suti.'], tags: ['Ala-Kul', '3 860 m', 'hot springs']
+      },
+      {
+        n: 6, type: 'trek', title: 'Altyn Arashan → Ak-Suu', sub: 'Trek 3/3 · prameny · návrat', route: 'Altyn Arashan → Ak-Suu → Karakol', transport: '4–5 h chůze + taxi', distance: '14–16 km', sleep: 'Karakol · guesthouse', difficulty: 'Střední · sestup',
+        summary: 'Regenerační ráno a sestup údolím do Ak-Suu. Odpoledne sprcha, jídlo a zaslouženě pomalý Karakol.',
+        coords: [[42.4009, 78.5935], [42.5016, 78.5263], [42.4778, 78.3956]],
+        schedule: [['08:00', 'Pomalá snídaně a případně druhá koupel v pramenech.'], ['10:00', 'Sestup širokým údolím směrem k Ak-Suu.'], ['15:00', 'Taxi / maršrutka do Karakolu a vyzvednutí uložených věcí.'], ['18:00', 'Dungan dinner a volný večer.']],
+        notes: ['Lze ušetřit nohy terénním vozem z Altyn Arashanu.', 'Po treku doplňte tekutiny a energii.', 'Zkontrolujte otlaky před zítřejším kaňonem.'], tags: ['Ak-Suu', 'regenerace', 'Karakol']
+      },
+      {
+        n: 7, type: 'nature', title: 'Jeti-Ögüz & Skazka', sub: 'Červené skály · jižní břeh', route: 'Karakol → Jeti-Ögüz → Skazka → Bokonbaevo', transport: '4–5 h jízdy + procházky', distance: '190 km', sleep: 'Bokonbaevo / Tong · jurta', difficulty: 'Lehký',
+        summary: 'Změna barev i tempa. Ráno ikonických Sedm býků, odpoledne pískovcové věže pohádkového kaňonu.',
+        coords: [[42.4778, 78.3956], [42.3196, 78.2367], [42.1591, 77.3547], [42.1181, 76.9943]],
+        schedule: [['08:30', 'Odjezd z Karakolu k Jeti-Ögüz a vyhlídka nad červenými skalami.'], ['11:30', 'Přejezd po jižním břehu, oběd cestou.'], ['15:00', 'Skazka Canyon: 1,5–2 h okruh mezi pískovcovými formacemi.'], ['18:30', 'Ubytování u Issyk-Kulu a večeře na břehu.']],
+        notes: ['V kaňonu je minimum stínu – voda a pokrývka hlavy.', 'Za deště může být povrch kluzký.', 'Soukromý řidič usnadní obě zastávky.'], tags: ['Jeti-Ögüz', 'Skazka', 'roadtrip']
+      },
+      {
+        n: 8, type: 'nature', title: 'Volný den u Issyk-Kulu', sub: 'Pláž · sauna · pomalé tempo', route: 'Bokonbaevo ↔ jižní břeh Issyk-Kulu', transport: 'minimum přejezdů', distance: '0–40 km', sleep: 'Bokonbaevo / Tong · jurta', difficulty: 'Odpočinek',
+        summary: 'Záměrně volný den. Po šesti intenzivních dnech si cesta zaslouží koupání, dlouhý oběd a nicnedělání.',
+        coords: [[42.1181, 76.9943], [42.1710, 77.0250]],
+        schedule: [['09:00', 'Pozdní snídaně a koupání v Issyk-Kulu.'], ['12:00', 'Volitelně ukázka lovu s orlem / lokální řemeslná dílna.'], ['15:00', 'Sauna, paddleboard nebo jen kniha na břehu.'], ['19:30', 'Západ slunce a poslední noc mimo město.']],
+        notes: ['Aktivitu s orlem rezervujte eticky u lokálního provozovatele.', 'Silné UV i při chladnějším větru.', 'Nechte program volný pro případ posunu treku.'], tags: ['Issyk-Kul', 'buffer day', 'odpočinek']
+      },
+      {
+        n: 9, type: 'city', title: 'Návrat do Biškeku', sub: 'Burana · město · poslední večer', route: 'Bokonbaevo → Burana → Biškek', transport: '5–6 h · auto / minivan', distance: '290 km', sleep: 'Biškek · hotel', difficulty: 'Lehký přejezd',
+        summary: 'Cesta Boómskou soutěskou zpět do hlavního města, s volitelnou zastávkou u věže Burana.',
+        coords: [[42.1181, 76.9943], [42.7468, 75.2502], [42.8746, 74.5698]],
+        schedule: [['08:30', 'Odjezd ze south shore směrem na západ.'], ['12:30', 'Oběd a volitelná odbočka k věži Burana.'], ['16:00', 'Check-in v Biškeku, sprcha a poslední nákupy.'], ['19:30', 'Závěrečná večeře a společné vyhodnocení expedice.']],
+        notes: ['Buffer pro pozdější návrat z hor.', 'Nevracejte se do Biškeku až v den odletu.', 'Rezervujte si lepší poslední večeři.'], tags: ['Burana', 'Biškek', 'večeře']
+      },
+      {
+        n: 10, type: 'city', title: 'Biškek & odlet', sub: 'Brunch · suvenýry · letiště', route: 'Biškek → letiště Manas', transport: '45 min · taxi', distance: '30 km', sleep: '—', difficulty: 'Volný den',
+        summary: 'Klidné finále s rezervou na letiště. Podle času odletu se vejde brunch, bazar nebo muzeum.',
+        coords: [[42.8746, 74.5698], [43.0613, 74.4776]],
+        schedule: [['09:30', 'Brunch a pomalé dopoledne v centru.'], ['11:00', 'Osh Bazaar: koření, med, plstěné výrobky a poslední dárky.'], ['14:00', 'Vyzvednutí zavazadel a taxi na letiště.'], ['−3 h', 'Být na letišti nejméně tři hodiny před mezinárodním letem.']],
+        notes: ['Upravte program podle skutečného času letu.', 'Hotovost utratit nebo směnit před security.', 'Zálohovat fotky ze všech tří telefonů.'], tags: ['odlet', 'suvenýry', 'rezerva']
+      }
+    ];
+
+    const checklist = [
+      'Cestovní pojištění kryjící trek nad 4 000 m',
+      'Průvodce / agentura pro Ala-Kul potvrzená',
+      '4×4 a jurta na Song-Kulu rezervované',
+      'Offline mapy a trasa ve všech telefonech',
+      'Teplý spacák nebo potvrzené lůžkoviny',
+      'Vodní filtr, lékárnička a nouzová fólie',
+      'Hotovost rozdělená mezi tři lidi',
+      'Nepromokavá vrstva a rukavice pro každého',
+      'Sdílené rezervace + kontakty i offline',
+      'Plán B při zavřeném Ala-Kul Passu'
+    ];
+
+    const icons = {
+      car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 16-1-1v-4l2-5h12l2 5v4l-1 1M6 16v2m12-2v2M7 13h.01M17 13h.01M5 10h14"/></svg>',
+      plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+      check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4 10-10"/></svg>'
+    };
+
+    const escapeText = value => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+
+    function renderDays() {
+      const root = document.getElementById('daysList');
+      root.innerHTML = days.map((day, idx) => `
+        <article class="day-card ${idx === 0 ? 'open' : ''}" data-type="${escapeText(day.type)}" data-day="${day.n}">
+          <button class="day-summary" aria-expanded="${idx === 0}" aria-controls="detail-${day.n}">
+            <span class="day-num">Den ${String(day.n).padStart(2,'0')}</span>
+            <span class="day-title"><strong>${escapeText(day.title)}</strong><span>${escapeText(day.sub)}</span></span>
+            <span class="day-transit">${icons.car}<span>${escapeText(day.transport)}</span></span>
+            <span class="expand-icon">${icons.plus}</span>
+          </button>
+          <div class="day-detail-wrap" id="detail-${day.n}"><div class="day-detail"><div class="day-detail-inner">
+            <div class="schedule">${day.schedule.map(row => `<div class="schedule-row"><span class="schedule-time">${escapeText(row[0])}</span><p>${row[1]}</p></div>`).join('')}</div>
+            <aside class="day-notes"><h4>Na co myslet</h4><ul>${day.notes.map(note => `<li>${escapeText(note)}</li>`).join('')}</ul><div class="tags">${day.tags.map(tag => `<span class="tag">${escapeText(tag)}</span>`).join('')}</div></aside>
+          </div></div></div>
+        </article>`).join('');
+
+      root.querySelectorAll('.day-summary').forEach(btn => btn.addEventListener('click', () => {
+        const card = btn.closest('.day-card');
+        const open = card.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      }));
+    }
+
+    function renderChecklist() {
+      let saved = [];
+      try { saved = JSON.parse(localStorage.getItem('kg-checklist') || '[]'); } catch (_) { saved = []; }
+      document.getElementById('checkList').innerHTML = checklist.map((item, i) => `
+        <label class="check-item"><input type="checkbox" data-check="${i}" ${saved.includes(i) ? 'checked' : ''}><span class="fake-check">${icons.check}</span><span>${escapeText(item)}</span></label>`).join('');
+      document.querySelectorAll('[data-check]').forEach(input => input.addEventListener('change', updateProgress));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const checked = [...document.querySelectorAll('[data-check]:checked')].map(el => Number(el.dataset.check));
+      localStorage.setItem('kg-checklist', JSON.stringify(checked));
+      const pct = checked.length * 10;
+      document.getElementById('progressRing').style.setProperty('--p', pct);
+      document.getElementById('progressText').textContent = `${checked.length}/10`;
+      if (checked.length === 10) showToast('Všechno připraveno. Můžete vyrazit!');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message; toast.classList.add('show');
+      clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function setupFilters() {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.day-card').forEach(card => card.classList.toggle('hidden', filter !== 'all' && card.dataset.type !== filter));
+      }));
+    }
+
+    function updateBudget() {
+      const people = Number(document.getElementById('people').value);
+      const style = Number(document.getElementById('style').value);
+      const base = { 'Ubytování & jurty': 4500, 'Doprava & transfery': 5300, 'Jídlo & voda': 3000, 'Trek, průvodce & vstupy': 4000 };
+      const personCosts = (base['Ubytování & jurty'] + base['Jídlo & voda'] + base['Trek, průvodce & vstupy']) * people;
+      const sharedTransport = base['Doprava & transfery'] * (0.55 + 0.45 * people);
+      const subtotal = (personCosts + sharedTransport) * style;
+      const total = Math.round(subtotal * 1.15 / 100) * 100;
+      const formatter = new Intl.NumberFormat('cs-CZ');
+      document.getElementById('budgetTotal').textContent = `${formatter.format(total)} Kč`;
+      document.getElementById('perPerson').textContent = `${formatter.format(Math.round(total/people/100)*100)} Kč / osoba`;
+      const scaled = {
+        'Ubytování & jurty': base['Ubytování & jurty'] * people * style,
+        'Doprava & transfery': sharedTransport * style,
+        'Jídlo & voda': base['Jídlo & voda'] * people * style,
+        'Trek, průvodce & vstupy': base['Trek, průvodce & vstupy'] * people * style
+      };
+      document.getElementById('budgetBreakdown').innerHTML = Object.entries(scaled).map(([label, val]) => `<div class="budget-row"><span>${label}</span><strong>${formatter.format(Math.round(val/100)*100)} Kč</strong></div>`).join('');
+    }
+
+    const waypointNames = {
+      1: ['Letiště Manas', 'Biškek'],
+      2: ['Biškek', 'Kochkor', 'Song-Kul'],
+      3: ['Song-Kul', 'Kochkor', 'Karakol'],
+      4: ['Karakol', 'Karakol Valley', 'Sirota Camp'],
+      5: ['Sirota', 'Ala-Kul', 'Ala-Kul Pass', 'Keldyke', 'Altyn Arashan'],
+      6: ['Altyn Arashan', 'Ak-Suu', 'Karakol'],
+      7: ['Karakol', 'Jeti-Ögüz', 'Skazka', 'Bokonbaevo'],
+      8: ['Bokonbaevo', 'Issyk-Kul'],
+      9: ['Bokonbaevo', 'Burana', 'Biškek'],
+      10: ['Biškek', 'Letiště Manas']
+    };
+    const mapAltitudes = {
+      1: [630, 850], 2: [850, 1800, 3016], 3: [3016, 1800, 1770],
+      4: [1770, 2200, 2950], 5: [2950, 3532, 3860, 2900, 2500],
+      6: [2500, 1800, 1770], 7: [1770, 2200, 1650, 1607],
+      8: [1607, 1607], 9: [1607, 1000, 850], 10: [850, 630]
+    };
+    let mapSvg = null;
+    let mapViewport = null;
+    let mapView = { x: 0, y: 0, w: 800, h: 620 };
+    let mapTargetView = { x: 0, y: 0, w: 800, h: 620 };
+    let mapDrag = null;
+    let mapViewAnimation = 0;
+    let mapAnimationTime = 0;
+    let mapSmoothing = 150;
+
+    function projectPoint(coord) {
+      const [lat, lng] = coord;
+      return [70 + ((lng - 74.25) / 4.55) * 660, 62 + ((43.18 - lat) / 1.62) * 500];
+    }
+
+    function pointsString(coords) {
+      return coords.map(coord => projectPoint(coord).map(n => n.toFixed(1)).join(',')).join(' ');
+    }
+
+    function applyMapTransform(view) {
+      if (!mapViewport) return;
+      const scale = 800 / view.w;
+      mapViewport.setAttribute('transform', `matrix(${scale} 0 0 ${scale} ${-view.x*scale} ${-view.y*scale})`);
+    }
+
+    function runMapAnimation(now) {
+      const dt = Math.min(34, Math.max(1, now - mapAnimationTime));
+      mapAnimationTime = now;
+      const alpha = 1 - Math.exp(-dt / mapSmoothing);
+      for (const key of ['x','y','w','h']) mapView[key] += (mapTargetView[key] - mapView[key]) * alpha;
+      applyMapTransform(mapView);
+      const remaining = Math.max(...['x','y','w','h'].map(key => Math.abs(mapTargetView[key]-mapView[key])));
+      if (remaining > .025) mapViewAnimation = requestAnimationFrame(runMapAnimation);
+      else {
+        mapView = {...mapTargetView}; applyMapTransform(mapView); mapViewAnimation = 0;
+      }
+    }
+
+    function setMapView(view, duration = 0) {
+      mapTargetView = {...view};
+      if (!mapViewport) { mapView = {...view}; return; }
+      duration = duration === true ? 700 : Number(duration) || 0;
+      if (!duration || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        cancelAnimationFrame(mapViewAnimation); mapViewAnimation = 0;
+        mapView = {...view}; applyMapTransform(mapView); return;
+      }
+      mapSmoothing = Math.max(75, Math.min(180, duration / 4.3));
+      if (!mapViewAnimation) {
+        mapAnimationTime = performance.now();
+        mapViewAnimation = requestAnimationFrame(runMapAnimation);
+      }
+    }
+
+    function focusMapOnDay(day, animate = true) {
+      const pts = day.coords.map(projectPoint);
+      const xs = pts.map(p => p[0]);
+      const ys = pts.map(p => p[1]);
+      let w = Math.max(Math.max(...xs) - Math.min(...xs) + 150, day.type === 'trek' ? 310 : 270);
+      let h = Math.max(Math.max(...ys) - Math.min(...ys) + 130, 220);
+      const ratio = 800 / 620;
+      if (w / h > ratio) h = w / ratio; else w = h * ratio;
+      w = Math.min(w, 800); h = Math.min(h, 620);
+      const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+      const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      setMapView({ x: Math.max(0, Math.min(800 - w, cx - w/2)), y: Math.max(0, Math.min(620 - h, cy - h/2)), w, h }, animate);
+    }
+
+    function zoomMap(factor, duration = 420) {
+      const base = mapTargetView;
+      const newW = Math.max(210, Math.min(800, base.w * factor));
+      const newH = newW / (800/620);
+      const cx = base.x + base.w / 2;
+      const cy = base.y + base.h / 2;
+      setMapView({ x: Math.max(0, Math.min(800-newW, cx-newW/2)), y: Math.max(0, Math.min(620-newH, cy-newH/2)), w: newW, h: newH }, duration);
+    }
+
+    function renderElevation(day) {
+      const values = mapAltitudes[day.n];
+      const coords = values.map((alt, index) => {
+        const x = values.length === 1 ? 90 : 6 + index * (168 / (values.length - 1));
+        const y = 44 - ((alt - 600) / 3400) * 38;
+        return [x, Math.max(4, Math.min(44, y))];
+      });
+      const line = coords.map(point => point.map(n => n.toFixed(1)).join(',')).join(' ');
+      const area = `6,47 ${line} 174,47`;
+      const max = Math.max(...values);
+      const gain = values.slice(1).reduce((sum, alt, index) => sum + Math.max(0, alt-values[index]), 0);
+      document.getElementById('mapElevation').innerHTML = `<div class="map-elevation-head"><span>Profil dne</span><b>${new Intl.NumberFormat('cs-CZ').format(max)} m</b></div><svg class="elevation-mini" viewBox="0 0 180 50" aria-label="Výškový profil dne"><defs><linearGradient id="elevationFillMini" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ba5c3e" stop-opacity=".32"/><stop offset="1" stop-color="#ba5c3e" stop-opacity=".03"/></linearGradient></defs><polyline class="elevation-area" points="${area}"/><polyline class="elevation-path" points="${line}"/></svg><div style="display:flex;justify-content:space-between;color:#78837f;font-size:8px"><span>start</span><span>stoupání +${Math.round(gain/10)*10} m</span><span>cíl</span></div>`;
+    }
+
+    function showMapPlace(day, index) {
+      const card = document.getElementById('mapPlaceCard');
+      const coord = day.coords[index];
+      document.getElementById('placeType').textContent = `Den ${day.n} · bod ${index+1}/${day.coords.length}`;
+      document.getElementById('placeName').textContent = (waypointNames[day.n] || [])[index] || `Bod ${index+1}`;
+      document.getElementById('placeCoords').textContent = `${coord[0].toFixed(4)}° N · ${coord[1].toFixed(4)}° E`;
+      card.classList.add('show');
+    }
+
+    function setupMap() {
+      const picker = document.getElementById('dayPicker');
+      picker.innerHTML = days.map(day => `<button class="day-dot" data-map-day="${day.n}" aria-label="Zobrazit den ${day.n}">${day.n}</button>`).join('');
+      picker.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => selectDay(Number(btn.dataset.mapDay))));
+      const mapEl = document.getElementById('map');
+      const overviewRoutes = days.map(day => `<polyline class="overview-route" points="${pointsString(day.coords)}"/>`).join('');
+      mapEl.innerHTML = `
+        <div class="map-stage">
+          <svg id="routeSvg" class="route-svg" viewBox="0 0 800 620" role="img" aria-label="Schematická mapa trasy v Kyrgyzstánu">
+            <defs>
+              <linearGradient id="mapBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8efe9"/><stop offset="1" stop-color="#cdded5"/></linearGradient>
+              <linearGradient id="lakeGradient" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#82bdc1"/><stop offset="1" stop-color="#4b969d"/></linearGradient>
+              <linearGradient id="mountainGradient" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#93a99f" stop-opacity=".18"/><stop offset="1" stop-color="#58776c" stop-opacity=".72"/></linearGradient>
+              <filter id="routeShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#7c3825" flood-opacity=".25"/></filter>
+              <filter id="markerShadow" x="-80%" y="-80%" width="260%" height="260%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#173d38" flood-opacity=".3"/></filter>
+              <clipPath id="countryClip"><path d="M34 130 112 91l91 19 73-42 108 28 91-23 78 52 108 3 94 69-44 92 34 88-77 44-41 97-110-6-88 45-86-15-76 38-84-44-104 17-58-71 31-79-47-79 39-76-34-66Z"/></clipPath>
+            </defs>
+            <g id="mapViewport" class="map-viewport">
+            <rect width="800" height="620" fill="url(#mapBg)"/>
+            <path class="country-shape" d="M34 130 112 91l91 19 73-42 108 28 91-23 78 52 108 3 94 69-44 92 34 88-77 44-41 97-110-6-88 45-86-15-76 38-84-44-104 17-58-71 31-79-47-79 39-76-34-66Z"/>
+            <g clip-path="url(#countryClip)" aria-hidden="true">
+              <g class="map-grid"><path d="M160 40v540M300 40v540M440 40v540M580 40v540M720 40v540"/><path d="M20 150h760M20 270h760M20 390h760M20 510h760"/></g>
+              <path class="mountain-ridge" d="M-20 450 36 394l31 28 43-83 38 60 47-101 35 69 43-43 39 57 55-88 35 57 54-101 47 91 42-57 43 71 56-112 45 84 48-48 45 88 46-42 39 126v130H-20Z"/>
+              <path class="mountain-line" d="m-10 453 47-57 31 29 42-85 39 61 46-101 36 69 43-42 38 56 55-88 35 57 54-101 47 91 42-57 43 70 56-111 45 84 48-48 45 87 46-41 39 126"/>
+              <path class="mountain-line" d="M13 498c87-63 153-24 225-70s127-29 195-3 124-7 180-52 116-31 178 7"/>
+              <path class="terrain-line" d="M24 197c115-85 180-18 271-71s196-29 258 14 138 5 222 61"/>
+              <path class="terrain-line" d="M8 233c115-85 195-13 283-61s182-34 265 8 139 9 230 62"/>
+              <path class="terrain-line" d="M-4 276c92-55 174-13 254-47s180-62 265-20 167 7 286 74"/>
+              <path class="terrain-line" d="M-7 319c91-44 164-5 249-32s175-58 268-17 181 21 292 66"/>
+              <path class="terrain-line" d="M-12 365c115-51 181 15 278-27s168-60 250-18 177 22 287 4"/>
+              <path class="terrain-line" d="M10 412c105-59 193 18 286-33s166-67 255-22 158 27 241-13"/>
+              <path class="terrain-line" d="M15 449c112-51 186 31 284-18s175-66 259-15 151 28 228-12"/>
+              <path class="terrain-line" d="M36 493c94-37 166 31 253-3s177-61 270-13 141 31 202 8"/>
+              <path class="terrain-line" d="M85 166c24 48 15 101-8 137s5 81 38 115 32 87 5 132"/>
+              <path class="terrain-line" d="M653 129c-19 48-10 96 20 133s17 81-15 119-21 87 11 128"/>
+              <path class="river" d="M79 141c71 34 97 18 143 46s66 22 104 76"/>
+              <path class="river" d="M269 425c-8 31-45 45-36 80s-5 48-29 76"/>
+              <path class="river" d="M675 299c-25 22-17 48-42 67s-45 29-58 65"/>
+              <g><polyline class="main-road-casing" points="112,157 221,243 291,360 348,290 620,264 672,280"/><polyline class="main-road" points="112,157 221,243 291,360 348,290 620,264 672,280"/></g>
+              <g><polyline class="main-road-casing" points="348,290 389,346 468,390 598,335 672,280"/><polyline class="main-road" points="348,290 389,346 468,390 598,335 672,280"/></g>
+            </g>
+            <path class="water-shape" d="M290 296c31-34 89-48 162-49 72-2 134 8 168 26-24 28-83 49-164 54-73 4-133-7-166-31Z"/>
+            <ellipse class="water-shape" cx="201" cy="477" rx="47" ry="16" transform="rotate(-4 201 477)"/>
+            <text class="map-label" x="421" y="294">ISSYK-KUL</text>
+            <text class="map-label small" x="178" y="481">SONG-KUL</text>
+            <text class="map-label small" x="93" y="113">KAZACHSTÁN</text>
+            <text class="map-label small" x="610" y="539">ČÍNA</text>
+            <text class="region-label" x="92" y="330">KYRGYZ ALA-TOO</text>
+            <text class="region-label" x="473" y="420">TERSKÉ ALA-TOO</text>
+            <text class="road-label" x="247" y="275">A365</text><text class="road-label" x="522" y="354">A363 · JIŽNÍ BŘEH</text>
+            <g class="settlement capital" transform="translate(112 157)"><circle r="5"/><text x="9" y="-7">Biškek</text></g>
+            <g class="settlement" transform="translate(291 360)"><circle r="4"/><text x="8" y="-6">Kochkor</text></g>
+            <g class="settlement" transform="translate(348 290)"><circle r="4"/><text x="-7" y="-9" text-anchor="end">Balykčy</text></g>
+            <g class="settlement" transform="translate(468 390)"><circle r="4"/><text x="8" y="14">Bokonbaevo</text></g>
+            <g class="settlement" transform="translate(672 280)"><circle r="5"/><text x="-8" y="-9" text-anchor="end">Karakol</text></g>
+            <g class="settlement" transform="translate(691 272)"><circle r="3.5"/><text x="8" y="12">Ak-Suu</text></g>
+            <g class="peak" transform="translate(606 397)"><path d="M0 10 7-3l7 13H0Z"/><text x="18" y="8">Karakol Peak · 5 216 m</text></g>
+            <g class="peak" transform="translate(522 435)"><path d="M0 10 7-3l7 13H0Z"/><text x="18" y="8">Těskej Alatau</text></g>
+            <g id="overviewRoutes">${overviewRoutes}</g>
+            <g id="activeRoute"></g>
+            </g>
+          </svg>
+          <div class="map-day-chip" id="mapDayChip"></div>
+          <div class="map-elevation" id="mapElevation"></div>
+          <div class="map-place-card" id="mapPlaceCard"><button class="place-close" id="placeClose" aria-label="Zavřít detail">×</button><span id="placeType">Bod trasy</span><strong id="placeName"></strong><small id="placeCoords"></small></div>
+          <div class="map-compass" aria-hidden="true"><b>N</b><svg viewBox="0 0 24 32"><path d="m12 1 6 23-6-4-6 4 6-23Z" fill="#0d302c"/><path d="m12 1 6 23-6-4V1Z" fill="#e9aa45"/></svg></div>
+          <div class="map-controls" aria-label="Ovládání mapy">
+            <button class="map-control" id="mapZoomIn" aria-label="Přiblížit">+</button>
+            <button class="map-control" id="mapZoomOut" aria-label="Oddálit">−</button>
+            <button class="map-control" id="mapReset" aria-label="Zobrazit celou mapu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/></svg></button>
+          </div>
+          <div class="map-legend"><i></i> vybraný den · tažením posunete mapu</div>
+        </div>`;
+      mapSvg = document.getElementById('routeSvg');
+      mapViewport = document.getElementById('mapViewport');
+      applyMapTransform(mapView);
+      document.getElementById('mapZoomIn').addEventListener('click', () => zoomMap(.8));
+      document.getElementById('mapZoomOut').addEventListener('click', () => zoomMap(1.25));
+      document.getElementById('mapReset').addEventListener('click', () => setMapView({x:0,y:0,w:800,h:620}, true));
+      document.getElementById('placeClose').addEventListener('click', () => document.getElementById('mapPlaceCard').classList.remove('show'));
+      mapSvg.addEventListener('wheel', event => {
+        event.preventDefault();
+        const factor = Math.exp(Math.max(-.16, Math.min(.16, event.deltaY * .0015)));
+        zoomMap(factor, 360);
+      }, { passive: false });
+      mapSvg.addEventListener('pointerdown', event => {
+        if (event.target.closest('.route-marker')) return;
+        cancelAnimationFrame(mapViewAnimation); mapViewAnimation = 0; mapTargetView = {...mapView};
+        mapDrag = { x: event.clientX, y: event.clientY, view: {...mapView} };
+        mapEl.classList.add('dragging'); mapSvg.setPointerCapture(event.pointerId);
+      });
+      mapSvg.addEventListener('pointermove', event => {
+        if (!mapDrag) return;
+        const rect = mapSvg.getBoundingClientRect();
+        const dx = (event.clientX-mapDrag.x) * mapDrag.view.w/rect.width;
+        const dy = (event.clientY-mapDrag.y) * mapDrag.view.h/rect.height;
+        const x = Math.max(0, Math.min(800-mapDrag.view.w, mapDrag.view.x-dx));
+        const y = Math.max(0, Math.min(620-mapDrag.view.h, mapDrag.view.y-dy));
+        setMapView({...mapDrag.view, x, y});
+      });
+      const endDrag = () => { mapDrag = null; mapEl.classList.remove('dragging'); };
+      mapSvg.addEventListener('pointerup', endDrag);
+      mapSvg.addEventListener('pointercancel', endDrag);
+      selectDay(1);
+    }
+
+    function renderSelectedRoute(day) {
+      if (!mapSvg) return;
+      const group = document.getElementById('activeRoute');
+      const points = pointsString(day.coords);
+      const names = waypointNames[day.n] || [];
+      const chip = document.getElementById('mapDayChip');
+      chip.innerHTML = `<span>Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.distance)}</span><strong>${escapeText(day.title)}</strong>`;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && chip.animate) chip.animate([{opacity:.35, transform:'translateY(-5px)'},{opacity:1, transform:'none'}], {duration:520, easing:'cubic-bezier(.22,.65,.3,1)'});
+      document.getElementById('mapPlaceCard').classList.remove('show');
+      renderElevation(day);
+      group.innerHTML = `<polyline class="active-route-casing" points="${points}"/><polyline class="active-route ${day.type === 'trek' ? 'trek' : ''}" points="${points}"/>` + day.coords.map((coord, idx) => {
+        const [x,y] = projectPoint(coord);
+        const isEnd = idx === day.coords.length-1;
+        const anchor = x > 625 ? 'end' : 'start';
+        const labelX = x > 625 ? x-17 : x+17;
+        return `<g class="route-marker ${isEnd ? 'end' : ''}" data-point-index="${idx}" tabindex="0" role="button" aria-label="Detail: ${escapeText(names[idx] || `Bod ${idx+1}`)}" style="animation-delay:${idx*.11}s" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><title>${escapeText(names[idx] || `Bod ${idx+1}`)}</title><circle r="11"/><text class="number" y=".5">${idx+1}</text><text class="place" x="${(labelX-x).toFixed(1)}" y="-15" text-anchor="${anchor}">${escapeText(names[idx] || '')}</text></g>`;
+      }).join('');
+      group.querySelectorAll('.route-marker').forEach(marker => {
+        const open = event => { event.stopPropagation(); showMapPlace(day, Number(marker.dataset.pointIndex)); };
+        marker.addEventListener('click', open);
+        marker.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
+      });
+      focusMapOnDay(day);
+    }
+
+    function selectDay(n) {
+      const day = days.find(d => d.n === n);
+      document.querySelectorAll('.day-dot').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.mapDay) === n));
+      const detail = document.getElementById('routeDetail');
+      detail.innerHTML = `<div class="route-meta">Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.route)}</div><h3>${escapeText(day.title)}</h3><p>${escapeText(day.summary)}</p><div class="route-facts"><div class="route-fact"><span>Vzdálenost</span><strong>${escapeText(day.distance)}</strong></div><div class="route-fact"><span>Nocleh</span><strong>${escapeText(day.sleep)}</strong></div><div class="route-fact"><span>Přesun</span><strong>${escapeText(day.transport)}</strong></div><div class="route-fact"><span>Náročnost</span><strong>${escapeText(day.difficulty)}</strong></div></div>`;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && detail.animate) detail.animate([{opacity:.25, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:520, easing:'cubic-bezier(.22,.65,.3,1)'});
+      renderSelectedRoute(day);
+    }
+
+    function setupMotion() {
+      document.body.classList.add('motion-ready');
+      const items = [...document.querySelectorAll('.section-head, .story-card, .feature-card, .route-layout, .day-card, .warning-grid, .planner-card, .source-link')];
+      items.forEach((item, index) => {
+        item.classList.add('reveal-item');
+        item.style.transitionDelay = `${Math.min((index % 4) * 55, 165)}ms`;
+      });
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+          if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
+        }), { threshold: .08, rootMargin: '0px 0px -6% 0px' });
+        items.forEach(item => observer.observe(item));
+      } else items.forEach(item => item.classList.add('is-visible'));
+      requestAnimationFrame(() => document.body.classList.add('motion-active'));
+
+      const hero = document.querySelector('.hero');
+      let ticking = false;
+      addEventListener('scroll', () => {
+        if (ticking || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        ticking = true;
+        requestAnimationFrame(() => { hero.style.setProperty('--hero-shift', `${Math.min(scrollY * .035, 24)}px`); ticking = false; });
+      }, { passive: true });
+    }
+
+    document.getElementById('people').addEventListener('change', updateBudget);
+    document.getElementById('style').addEventListener('change', updateBudget);
+    const menuBtn = document.getElementById('menuBtn');
+    menuBtn.addEventListener('click', () => {
+      const open = document.getElementById('navLinks').classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+
+    renderDays();
+    renderChecklist();
+    setupFilters();
+    updateBudget();
+    setupMap();
+    setupMotion();
+  </script>
+</body>
+</html>
