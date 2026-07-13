@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0d302c">
   <meta name="description" content="Interaktivní 10denní itinerář dobrodružné cesty Kyrgyzstánem pro tři kamarády.">
   <title>Kyrgyzstán · 10 dní mezi nebem a stepí</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23e9aa45'/%3E%3Cpath d='M10 46 25.4 21.8l8.1 11.4L42.1 18 58 46H10Z' fill='%230d302c'/%3E%3Cpath d='m22.1 27.1 3.5-5.3 3.6 5.1' fill='none' stroke='%23fffdf8' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
@@ -237,7 +238,8 @@
     .map-day-chip { position: absolute; z-index: 4; top: 18px; left: 18px; max-width: 280px; padding: 11px 14px; border-radius: 13px; background: rgba(13,48,44,.91); color: white; box-shadow: 0 8px 25px rgba(13,48,44,.2); pointer-events: none; backdrop-filter: blur(9px); }
     .map-day-chip span { display: block; color: var(--gold); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
     .map-day-chip strong { display: block; margin-top: 3px; font: 700 13px Manrope, sans-serif; }
-    .map-elevation { position: absolute; z-index: 4; right: 18px; bottom: 17px; width: 205px; padding: 12px 13px 10px; border-radius: 14px; background: rgba(255,253,248,.92); color: var(--ink); box-shadow: 0 8px 25px rgba(13,48,44,.13); pointer-events: none; backdrop-filter: blur(9px); }
+    .map-elevation { position: absolute; z-index: 4; right: 18px; bottom: 17px; width: 205px; padding: 12px 13px 10px; border-radius: 14px; background: rgba(255,253,248,.92); color: var(--ink); box-shadow: 0 8px 25px rgba(13,48,44,.13); pointer-events: none; backdrop-filter: blur(9px); transition: opacity .22s ease, transform .22s ease; }
+    #map.place-open .map-elevation { opacity: 0; transform: translateY(8px); }
     .map-elevation-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
     .map-elevation-head span { color: var(--muted); font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
     .map-elevation-head b { font: 800 11px Manrope, sans-serif; }
@@ -254,6 +256,99 @@
     .map-compass { position: absolute; z-index: 3; right: 26px; top: 166px; width: 28px; height: 48px; color: #587169; text-align: center; pointer-events: none; }
     .map-compass b { display: block; font: 800 9px Manrope, sans-serif; letter-spacing: .12em; }
     .map-compass svg { width: 24px; height: 32px; filter: drop-shadow(0 2px 3px rgba(13,48,44,.12)); }
+
+    /* Clear map navigation and scale-aware marker system */
+    .route-layout { min-height: 700px; }
+    .map-mode-switch { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px; margin: 2px 0 20px; }
+    .map-mode-btn { min-width: 0; border: 1px solid rgba(255,255,255,.14); border-radius: 13px; padding: 10px 7px; color: rgba(255,255,255,.62); background: rgba(255,255,255,.035); text-align: left; transition: background .25s ease, border-color .25s ease, color .25s ease, transform .25s ease; }
+    .map-mode-btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.3); color: white; }
+    .map-mode-btn span { display: block; overflow: hidden; text-overflow: ellipsis; font-size: 8px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; }
+    .map-mode-btn b { display: block; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; font: 700 12px Manrope, sans-serif; white-space: nowrap; }
+    .map-mode-btn.active { border-color: var(--gold); background: var(--gold); color: var(--forest); box-shadow: 0 7px 22px rgba(233,170,69,.18); }
+    .map-mode-btn.trek-mode-btn:not(.active) { border-color: rgba(233,170,69,.35); color: #f1c980; }
+    .picker-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; color: rgba(255,255,255,.78); font-size: 11px; font-weight: 700; }
+    .picker-row small { color: rgba(255,255,255,.34); font-size: 9px; font-weight: 500; }
+    .day-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; overflow: visible; padding-bottom: 17px; }
+    .day-dot { width: 100%; height: 35px; border-radius: 11px; }
+    .day-dot.trek-day { border-color: rgba(233,170,69,.48); color: #f0c06f; }
+    .day-dot.trek-day::after { content: ""; display: inline-block; width: 4px; height: 4px; margin: 0 0 2px 4px; border-radius: 50%; background: currentColor; }
+    .day-dot.trek-selected { border-color: var(--gold); background: rgba(233,170,69,.16); color: var(--gold); }
+    .trek-stage-picker { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin: -4px 0 17px; }
+    .trek-stage-picker[hidden] { display: none; }
+    .trek-stage-btn { border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 9px 10px; color: rgba(255,255,255,.62); background: rgba(255,255,255,.04); text-align: left; transition: .22s ease; }
+    .trek-stage-btn:first-child { grid-column: 1 / -1; }
+    .trek-stage-btn span { display: block; color: inherit; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .trek-stage-btn b { display: block; margin-top: 2px; font-size: 11px; }
+    .trek-stage-btn.active { border-color: var(--gold); background: rgba(233,170,69,.15); color: var(--gold); }
+    .route-detail { min-height: 250px; padding-top: 21px; }
+    .overview-progress { display: grid; grid-template-columns: repeat(10,1fr); gap: 3px; margin-top: 18px; }
+    .overview-progress button { height: 25px; border: 0; border-radius: 7px; padding: 0; color: white; background: rgba(255,255,255,.09); font-size: 9px; font-weight: 800; transition: .2s; }
+    .overview-progress button:hover { color: var(--forest); background: var(--gold); transform: translateY(-2px); }
+    #map, .map-stage, .route-svg { min-height: 700px; }
+    .map-viewport { transform-origin: 0 0; }
+    .active-route, .active-route-casing, .overview-segment, .trek-stage-line, .trek-stage-casing { vector-effect: non-scaling-stroke; }
+    .overview-segment { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: .77; cursor: pointer; transition: opacity .22s ease, stroke-width .22s ease; }
+    .overview-segment:hover, .overview-segment:focus { opacity: 1; stroke-width: 5; outline: none; }
+    .overview-segment.city { stroke: #d79b3e; }
+    .overview-segment.nature { stroke: #3c8c92; }
+    .overview-segment.trek { stroke: #ba5c3e; stroke-dasharray: 7 6; }
+    .overview-day-link { fill: none; stroke: rgba(255,255,255,.8); stroke-width: 7; vector-effect: non-scaling-stroke; pointer-events: none; }
+    .route-marker { animation: markerFade .42s ease both; }
+    .marker-visual { transform: scale(var(--marker-scale, 1)); transform-origin: 0 0; transform-box: view-box; }
+    @keyframes markerFade { from { opacity: 0; } to { opacity: 1; } }
+    .route-marker .marker-hit { fill: transparent; stroke: none; pointer-events: all; }
+    .route-marker circle.marker-shape { r: 9px; fill: var(--forest); stroke: white; stroke-width: 3; vector-effect: non-scaling-stroke; }
+    .route-marker:hover circle.marker-hit { r: 20px; }
+    .route-marker:hover circle.marker-shape { r: 11px; }
+    .route-marker.end circle.marker-shape { fill: var(--gold); }
+    .route-marker.overview-marker circle.marker-shape { r: 12px; }
+    .route-marker.trek-key circle.marker-shape { r: 7px; fill: #fffdf8; stroke: var(--rust); }
+    .route-marker.pass circle.marker-shape { fill: var(--gold); stroke: var(--forest); }
+    .route-marker.camp circle.marker-shape { fill: var(--forest-2); stroke: var(--gold); }
+    .route-marker text.number { font-size: 9px; }
+    .route-marker.overview-marker text.number { font-size: 10px; }
+    .route-marker text.place { opacity: 0; transform: translateY(3px); transition: opacity .2s ease, transform .2s ease; }
+    .route-marker.label-always text.place, .route-marker:hover text.place, .route-marker:focus text.place { opacity: 1; transform: none; }
+    .route-marker.overview-marker text.place { font-size: 10px; }
+    .map-zoomed .settlement, .map-zoomed .road-label, .map-zoomed .region-label, .map-zoomed .peak { opacity: 0; pointer-events: none; }
+    .settlement, .road-label, .region-label, .peak { transition: opacity .25s ease; }
+    .detail-contour { fill: none; stroke: #718a80; stroke-width: 1; opacity: .24; vector-effect: non-scaling-stroke; }
+    .detail-river { fill: none; stroke: #4195a0; stroke-width: 2.2; opacity: .75; vector-effect: non-scaling-stroke; }
+    .detail-lake { fill: #48a7ae; stroke: white; stroke-width: 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 3px 5px rgba(30,100,105,.2)); }
+    .detail-zone { fill: rgba(233,170,69,.08); stroke: rgba(186,92,62,.28); stroke-width: 1.4; stroke-dasharray: 5 7; vector-effect: non-scaling-stroke; }
+    .trek-stage-casing { fill: none; stroke: rgba(255,255,255,.92); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .trek-stage-line { fill: none; stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; transition: opacity .25s ease; }
+    .trek-stage-line.stage-1 { stroke: #257c72; }
+    .trek-stage-line.stage-2 { stroke: #ba5c3e; stroke-dasharray: 8 6; }
+    .trek-stage-line.stage-3 { stroke: #4b83a4; }
+    .trek-stage-line.drive { stroke-dasharray: 2 7; stroke-width: 3; }
+    .trek-stage-group.dimmed { opacity: .17; }
+    .marker-leader { stroke: rgba(13,48,44,.55); stroke-width: 1; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; pointer-events: none; }
+    .map-day-chip { max-width: 320px; }
+    .map-day-chip .chip-mode { display: inline-flex; align-items: center; gap: 6px; }
+    .map-day-chip .chip-mode::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+    .map-elevation.trek-profile { width: 270px; }
+    .elevation-day-lines { stroke: rgba(19,32,29,.18); stroke-width: 1; stroke-dasharray: 2 3; }
+    .map-legend { display: flex; align-items: center; gap: 12px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 5px; }
+    .legend-line { width: 20px; height: 3px; border-radius: 4px; background: var(--rust); }
+    .legend-line.drive { background: #3c8c92; }
+    .legend-line.hike { background: repeating-linear-gradient(90deg,#ba5c3e 0 5px,transparent 5px 8px); }
+    .legend-line.stage1 { background: #257c72; }.legend-line.stage2 { background: #ba5c3e; }.legend-line.stage3 { background: #4b83a4; }
+
+    @media (max-width: 950px) {
+      .route-layout { grid-template-columns: 360px 1fr; }
+      .map-mode-btn { padding-inline: 6px; }
+    }
+
+    @media (max-width: 700px) {
+      .route-layout { grid-template-columns: 1fr; }
+      #map, .map-stage, .route-svg { min-height: 560px; }
+      .map-mode-switch { margin-bottom: 17px; }
+      .map-elevation.trek-profile { width: 190px; }
+      .map-day-chip { max-width: 220px; }
+      .overview-progress { gap: 2px; }
+    }
 
     .itinerary { padding: 110px 0; background: var(--paper); }
     .itinerary-toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 38px; }
@@ -359,7 +454,7 @@
       .hero-stats { grid-template-columns: 1fr 1fr; }
       .hero-stat:nth-child(2) { border-right: 0; }
       .intro-grid, .warning-grid, .planner-grid { grid-template-columns: 1fr; }
-      .route-layout { grid-template-columns: 340px 1fr; }
+      .route-layout { grid-template-columns: 360px 1fr; }
       .day-summary { grid-template-columns: 85px 1fr .7fr 42px; gap: 16px; }
       .day-detail-inner { margin-left: 97px; }
       .warning-grid { gap: 30px; }
@@ -389,7 +484,7 @@
       .route-section { padding: 35px 0 78px; }
       .route-layout { grid-template-columns: 1fr; }
       .route-panel { padding: 27px; }
-      #map, .map-stage, .route-svg { min-height: 460px; }
+      #map, .map-stage, .route-svg { min-height: 560px; }
       .map-day-chip { max-width: 205px; top: 12px; left: 12px; }
       .map-elevation { width: 170px; right: 12px; bottom: 12px; }
       .map-legend { display: none; }
@@ -514,12 +609,19 @@
           <aside class="route-panel">
             <div class="section-kicker" style="color: var(--gold)">Interaktivní trasa</div>
             <h2>10 dní na mapě</h2>
-            <p>Vyberte den. Mapa přiblíží jeho trasu a ukáže klíčová místa.</p>
+            <p>Přepínejte mezi celou cestou, jednotlivými dny a detailním třídenním trekem Ala-Kul.</p>
+            <div class="map-mode-switch" id="mapModeSwitch" aria-label="Režim mapy">
+              <button class="map-mode-btn active" data-map-mode="overview"><span>Přehled</span><b>10 dní</b></button>
+              <button class="map-mode-btn" data-map-mode="day"><span>Detail</span><b>1 den</b></button>
+              <button class="map-mode-btn trek-mode-btn" data-map-mode="trek"><span>Hlavní trek</span><b>Ala-Kul</b></button>
+            </div>
+            <div class="picker-row"><span>Vybrat den</span><small>Kliknutí otevře detail</small></div>
             <div class="day-picker" id="dayPicker" aria-label="Výběr dne"></div>
+            <div class="trek-stage-picker" id="trekStagePicker" aria-label="Etapy Ala-Kul treku" hidden></div>
             <div class="route-detail" id="routeDetail"></div>
             <div class="route-hint">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5 7-12A7 7 0 0 0 5 9c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2"/></svg>
-              Mapu lze přibližovat a posouvat
+              Klička = detail bodu · tažení = posun mapy
             </div>
           </aside>
           <div id="map" role="application" aria-label="Mapa trasy po Kyrgyzstánu"></div>
@@ -690,7 +792,7 @@
 
     const checklist = [
       'Cestovní pojištění kryjící trek nad 4 000 m',
-      'Průvodce / agentura pro Ala-Kul potvrzená',
+      'Očkování na Břišní Tyfus a Vzteklinu',
       '4×4 a jurta na Song-Kulu rezervované',
       'Offline mapy a trasa ve všech telefonech',
       'Teplý spacák nebo potvrzené lůžkoviny',
@@ -803,11 +905,52 @@
       6: [2500, 1800, 1770], 7: [1770, 2200, 1650, 1607],
       8: [1607, 1607], 9: [1607, 1000, 850], 10: [850, 630]
     };
+    const overviewMarkerOffsets = {
+      1: [-8, 8], 2: [0, 0], 3: [-15, 5], 4: [-5, 5], 5: [0, 0],
+      6: [12, -10], 7: [-7, 7], 8: [13, -9], 9: [-24, -15], 10: [7, -5]
+    };
+    const alaKulPoints = {
+      karakol: { name: 'Karakol', coord: [42.4778, 78.3956], alt: 1770, kind: 'city', note: 'Základna, uložení zavazadel a kontrola vybavení.', label: [-16,-18,'end'] },
+      trailhead: { name: 'Karakol Valley', coord: [42.3267, 78.3758], alt: 2200, kind: 'trailhead', note: 'Začátek pěší části po ranním transferu.', label: [-16,19,'end'] },
+      sirota: { name: 'Sirota Camp', coord: [42.3017, 78.4149], alt: 2950, kind: 'camp', note: 'První noc. Jednoduchý tábor v lese pod jezerem.', label: [16,20,'start'] },
+      waterfall: { name: 'Vodopád', coord: [42.3088, 78.4600], alt: 3230, kind: 'point', note: 'Prudké ranní stoupání nad Sirotou.', label: [-16,-17,'end'] },
+      lake: { name: 'Ala-Kul Lake', coord: [42.3173, 78.5324], alt: 3532, kind: 'lake', note: 'Tyrkysové ledovcové jezero a hlavní vizuální bod treku.', label: [-17,21,'end'], offset: [-2.5,2] },
+      pass: { name: 'Ala-Kul Pass', coord: [42.3255, 78.5486], alt: 3860, kind: 'pass', note: 'Nejvyšší a nejtěžší místo. Pokračovat jen za bezpečného počasí.', label: [18,-20,'start'], offset: [3,-2] },
+      keldyke: { name: 'Keldyke Valley', coord: [42.3483, 78.5815], alt: 2900, kind: 'point', note: 'Dlouhý sestup sutí do zeleného údolí.', label: [17,19,'start'] },
+      altyn: { name: 'Altyn Arashan', coord: [42.4009, 78.5935], alt: 2500, kind: 'camp', note: 'Druhá noc, teplé jídlo a horké prameny.', label: [17,-18,'start'] },
+      aksuu: { name: 'Ak-Suu', coord: [42.5016, 78.5263], alt: 1800, kind: 'finish', note: 'Konec pěšího treku a návrat do Karakolu.', label: [17,19,'start'] }
+    };
+    const alaKulStages = [
+      {
+        id: 1, day: 4, title: 'Karakol Valley → Sirota', short: 'Nástup do hor', distance: '18–20 km', time: '7–8 h', gain: '+1 050 m', color: '#257c72',
+        segments: [
+          { mode: 'drive', coords: [alaKulPoints.karakol.coord, alaKulPoints.trailhead.coord] },
+          { mode: 'hike', coords: [alaKulPoints.trailhead.coord, [42.3190,78.3830], [42.3095,78.3970], alaKulPoints.sirota.coord] }
+        ], points: ['karakol','trailhead','sirota'], altitudes: [1770,2200,2450,2950]
+      },
+      {
+        id: 2, day: 5, title: 'Ala-Kul Pass → Altyn Arashan', short: 'Královská etapa', distance: '17–19 km', time: '8–10 h', gain: '+910 m', color: '#ba5c3e',
+        segments: [{ mode: 'hike', coords: [alaKulPoints.sirota.coord, alaKulPoints.waterfall.coord, [42.3145,78.5050], alaKulPoints.lake.coord, alaKulPoints.pass.coord, alaKulPoints.keldyke.coord, alaKulPoints.altyn.coord] }],
+        points: ['sirota','waterfall','lake','pass','keldyke','altyn'], altitudes: [2950,3230,3532,3860,2900,2500]
+      },
+      {
+        id: 3, day: 6, title: 'Altyn Arashan → Ak-Suu', short: 'Prameny a sestup', distance: '14–16 km', time: '4–5 h', gain: '+80 m', color: '#4b83a4',
+        segments: [
+          { mode: 'hike', coords: [alaKulPoints.altyn.coord, [42.4470,78.5780], alaKulPoints.aksuu.coord] },
+          { mode: 'drive', coords: [alaKulPoints.aksuu.coord, alaKulPoints.karakol.coord] }
+        ], points: ['altyn','aksuu','karakol'], altitudes: [2500,2200,1800,1770]
+      }
+    ];
+    let currentMapMode = 'overview';
+    let currentMapDay = 1;
+    let currentTrekStage = 'all';
     let mapSvg = null;
     let mapViewport = null;
     let mapView = { x: 0, y: 0, w: 800, h: 620 };
     let mapTargetView = { x: 0, y: 0, w: 800, h: 620 };
     let mapDrag = null;
+    const mapPointers = new Map();
+    let pinchStart = null;
     let mapViewAnimation = 0;
     let mapAnimationTime = 0;
     let mapSmoothing = 150;
@@ -825,6 +968,8 @@
       if (!mapViewport) return;
       const scale = 800 / view.w;
       mapViewport.setAttribute('transform', `matrix(${scale} 0 0 ${scale} ${-view.x*scale} ${-view.y*scale})`);
+      mapSvg.style.setProperty('--marker-scale', (1 / Math.pow(scale, 1.12)).toFixed(4));
+      document.getElementById('map').classList.toggle('map-zoomed', scale > 1.55);
     }
 
     function runMapAnimation(now) {
@@ -855,12 +1000,13 @@
       }
     }
 
-    function focusMapOnDay(day, animate = true) {
-      const pts = day.coords.map(projectPoint);
+    function focusMapOnCoords(coords, options = {}) {
+      const { animate = true, minWidth = 275, paddingX = 150, paddingY = 130 } = options;
+      const pts = coords.map(projectPoint);
       const xs = pts.map(p => p[0]);
       const ys = pts.map(p => p[1]);
-      let w = Math.max(Math.max(...xs) - Math.min(...xs) + 150, day.type === 'trek' ? 310 : 270);
-      let h = Math.max(Math.max(...ys) - Math.min(...ys) + 130, 220);
+      let w = Math.max(Math.max(...xs) - Math.min(...xs) + paddingX, minWidth);
+      let h = Math.max(Math.max(...ys) - Math.min(...ys) + paddingY, 215);
       const ratio = 800 / 620;
       if (w / h > ratio) h = w / ratio; else w = h * ratio;
       w = Math.min(w, 800); h = Math.min(h, 620);
@@ -869,13 +1015,19 @@
       setMapView({ x: Math.max(0, Math.min(800 - w, cx - w/2)), y: Math.max(0, Math.min(620 - h, cy - h/2)), w, h }, animate);
     }
 
-    function zoomMap(factor, duration = 420) {
+    function focusMapOnDay(day, animate = true) {
+      focusMapOnCoords(day.coords, { animate, minWidth: day.type === 'trek' ? 285 : 275 });
+    }
+
+    function zoomMap(factor, duration = 420, anchor = null) {
       const base = mapTargetView;
-      const newW = Math.max(210, Math.min(800, base.w * factor));
+      const newW = Math.max(175, Math.min(800, base.w * factor));
       const newH = newW / (800/620);
-      const cx = base.x + base.w / 2;
-      const cy = base.y + base.h / 2;
-      setMapView({ x: Math.max(0, Math.min(800-newW, cx-newW/2)), y: Math.max(0, Math.min(620-newH, cy-newH/2)), w: newW, h: newH }, duration);
+      const rx = anchor?.x ?? .5;
+      const ry = anchor?.y ?? .5;
+      const anchorX = base.x + base.w * rx;
+      const anchorY = base.y + base.h * ry;
+      setMapView({ x: Math.max(0, Math.min(800-newW, anchorX-newW*rx)), y: Math.max(0, Math.min(620-newH, anchorY-newH*ry)), w: newW, h: newH }, duration);
     }
 
     function renderElevation(day) {
@@ -892,21 +1044,46 @@
       document.getElementById('mapElevation').innerHTML = `<div class="map-elevation-head"><span>Profil dne</span><b>${new Intl.NumberFormat('cs-CZ').format(max)} m</b></div><svg class="elevation-mini" viewBox="0 0 180 50" aria-label="Výškový profil dne"><defs><linearGradient id="elevationFillMini" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ba5c3e" stop-opacity=".32"/><stop offset="1" stop-color="#ba5c3e" stop-opacity=".03"/></linearGradient></defs><polyline class="elevation-area" points="${area}"/><polyline class="elevation-path" points="${line}"/></svg><div style="display:flex;justify-content:space-between;color:#78837f;font-size:8px"><span>start</span><span>stoupání +${Math.round(gain/10)*10} m</span><span>cíl</span></div>`;
     }
 
-    function showMapPlace(day, index) {
+    function showMapPlaceInfo({ type = 'Bod trasy', name, coord, detail = '' }) {
       const card = document.getElementById('mapPlaceCard');
-      const coord = day.coords[index];
-      document.getElementById('placeType').textContent = `Den ${day.n} · bod ${index+1}/${day.coords.length}`;
-      document.getElementById('placeName').textContent = (waypointNames[day.n] || [])[index] || `Bod ${index+1}`;
-      document.getElementById('placeCoords').textContent = `${coord[0].toFixed(4)}° N · ${coord[1].toFixed(4)}° E`;
+      document.getElementById('placeType').textContent = type;
+      document.getElementById('placeName').textContent = name;
+      document.getElementById('placeCoords').textContent = detail || `${coord[0].toFixed(4)}° N · ${coord[1].toFixed(4)}° E`;
       card.classList.add('show');
+      document.getElementById('map').classList.add('place-open');
+    }
+
+    function markerMarkup({ coord, label, number = '', classes = '', labelAlways = false, labelPosition = null, offset = [0,0], data = '' }) {
+      let [x,y] = projectPoint(coord);
+      x += offset[0]; y += offset[1];
+      const fallback = x > 620 ? [-16,-16,'end'] : [16,-16,'start'];
+      const [lx,ly,anchor] = labelPosition || fallback;
+      return `<g class="route-marker ${classes} ${labelAlways ? 'label-always' : ''}" ${data} tabindex="0" role="button" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><g class="marker-visual"><circle class="marker-hit" r="20"/><circle class="marker-shape" r="9"/><text class="number" y=".5">${escapeText(number)}</text><text class="place" x="${lx}" y="${ly}" text-anchor="${anchor}">${escapeText(label)}</text></g></g>`;
+    }
+
+    function renderTrekElevation(stageId = 'all') {
+      const elevation = document.getElementById('mapElevation');
+      elevation.classList.add('trek-profile');
+      const selectedStages = stageId === 'all' ? alaKulStages : alaKulStages.filter(stage => stage.id === Number(stageId));
+      const values = selectedStages.flatMap((stage, idx) => idx ? stage.altitudes.slice(1) : stage.altitudes);
+      const width = 220;
+      const coords = values.map((alt, index) => [8 + index * ((width-16)/(values.length-1)), 55 - ((alt-1600)/2400)*46]);
+      const line = coords.map(point => point.map(n => n.toFixed(1)).join(',')).join(' ');
+      const area = `8,58 ${line} ${width-8},58`;
+      const max = Math.max(...values);
+      const dividers = stageId === 'all' ? '<path class="elevation-day-lines" d="M72 4v54M150 4v54"/>' : '';
+      elevation.innerHTML = `<div class="map-elevation-head"><span>${stageId === 'all' ? 'Ala-Kul · 3 dny' : `Etapa ${stageId}/3`}</span><b>${new Intl.NumberFormat('cs-CZ').format(max)} m</b></div><svg class="elevation-mini" viewBox="0 0 ${width} 62" aria-label="Výškový profil Ala-Kul treku"><defs><linearGradient id="elevationFillMini" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ba5c3e" stop-opacity=".34"/><stop offset="1" stop-color="#ba5c3e" stop-opacity=".03"/></linearGradient></defs><polyline class="elevation-area" points="${area}"/>${dividers}<polyline class="elevation-path" points="${line}"/></svg><div style="display:flex;justify-content:space-between;color:#78837f;font-size:8px"><span>start</span><span>${stageId === 'all' ? '49–55 km' : selectedStages[0].distance}</span><span>cíl</span></div>`;
     }
 
     function setupMap() {
       const picker = document.getElementById('dayPicker');
-      picker.innerHTML = days.map(day => `<button class="day-dot" data-map-day="${day.n}" aria-label="Zobrazit den ${day.n}">${day.n}</button>`).join('');
+      picker.innerHTML = days.map(day => `<button class="day-dot ${day.n >= 4 && day.n <= 6 ? 'trek-day' : ''}" data-map-day="${day.n}" aria-label="Zobrazit den ${day.n}">${day.n}</button>`).join('');
       picker.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => selectDay(Number(btn.dataset.mapDay))));
+      document.querySelectorAll('[data-map-mode]').forEach(btn => btn.addEventListener('click', () => setMapMode(btn.dataset.mapMode)));
+      const stagePicker = document.getElementById('trekStagePicker');
+      stagePicker.innerHTML = `<button class="trek-stage-btn active" data-trek-stage="all"><span>Celý trek</span><b>3 dny · 2 noci</b></button>` + alaKulStages.map(stage => `<button class="trek-stage-btn" data-trek-stage="${stage.id}"><span>Den ${stage.id}/3</span><b>${escapeText(stage.distance)}</b></button>`).join('');
+      stagePicker.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => selectTrekStage(btn.dataset.trekStage)));
       const mapEl = document.getElementById('map');
-      const overviewRoutes = days.map(day => `<polyline class="overview-route" points="${pointsString(day.coords)}"/>`).join('');
       mapEl.innerHTML = `
         <div class="map-stage">
           <svg id="routeSvg" class="route-svg" viewBox="0 0 800 620" role="img" aria-label="Schematická mapa trasy v Kyrgyzstánu">
@@ -959,7 +1136,8 @@
             <g class="settlement" transform="translate(691 272)"><circle r="3.5"/><text x="8" y="12">Ak-Suu</text></g>
             <g class="peak" transform="translate(606 397)"><path d="M0 10 7-3l7 13H0Z"/><text x="18" y="8">Karakol Peak · 5 216 m</text></g>
             <g class="peak" transform="translate(522 435)"><path d="M0 10 7-3l7 13H0Z"/><text x="18" y="8">Těskej Alatau</text></g>
-            <g id="overviewRoutes">${overviewRoutes}</g>
+            <g id="detailTerrain"></g>
+            <g id="overviewRoutes"></g>
             <g id="activeRoute"></g>
             </g>
           </svg>
@@ -972,73 +1150,239 @@
             <button class="map-control" id="mapZoomOut" aria-label="Oddálit">−</button>
             <button class="map-control" id="mapReset" aria-label="Zobrazit celou mapu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/></svg></button>
           </div>
-          <div class="map-legend"><i></i> vybraný den · tažením posunete mapu</div>
+          <div class="map-legend" id="mapLegend"></div>
         </div>`;
       mapSvg = document.getElementById('routeSvg');
       mapViewport = document.getElementById('mapViewport');
       applyMapTransform(mapView);
       document.getElementById('mapZoomIn').addEventListener('click', () => zoomMap(.8));
       document.getElementById('mapZoomOut').addEventListener('click', () => zoomMap(1.25));
-      document.getElementById('mapReset').addEventListener('click', () => setMapView({x:0,y:0,w:800,h:620}, true));
-      document.getElementById('placeClose').addEventListener('click', () => document.getElementById('mapPlaceCard').classList.remove('show'));
+      document.getElementById('mapReset').addEventListener('click', () => setMapMode('overview'));
+      document.getElementById('placeClose').addEventListener('click', () => { document.getElementById('mapPlaceCard').classList.remove('show'); mapEl.classList.remove('place-open'); });
       mapSvg.addEventListener('wheel', event => {
         event.preventDefault();
+        const rect = mapSvg.getBoundingClientRect();
         const factor = Math.exp(Math.max(-.16, Math.min(.16, event.deltaY * .0015)));
-        zoomMap(factor, 360);
+        zoomMap(factor, 360, { x: (event.clientX-rect.left)/rect.width, y: (event.clientY-rect.top)/rect.height });
       }, { passive: false });
       mapSvg.addEventListener('pointerdown', event => {
-        if (event.target.closest('.route-marker')) return;
+        if (event.target.closest('.route-marker, .overview-segment, .trek-stage-line')) return;
         cancelAnimationFrame(mapViewAnimation); mapViewAnimation = 0; mapTargetView = {...mapView};
-        mapDrag = { x: event.clientX, y: event.clientY, view: {...mapView} };
-        mapEl.classList.add('dragging'); mapSvg.setPointerCapture(event.pointerId);
+        mapPointers.set(event.pointerId, { x:event.clientX, y:event.clientY });
+        mapSvg.setPointerCapture(event.pointerId);
+        if (mapPointers.size === 1) {
+          mapDrag = { x:event.clientX, y:event.clientY, view:{...mapView} };
+          mapEl.classList.add('dragging');
+        } else if (mapPointers.size === 2) {
+          const [a,b] = [...mapPointers.values()];
+          const rect = mapSvg.getBoundingClientRect();
+          const center = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+          const rx = (center.x-rect.left)/rect.width;
+          const ry = (center.y-rect.top)/rect.height;
+          pinchStart = { distance:Math.hypot(a.x-b.x,a.y-b.y), view:{...mapView}, anchorX:mapView.x+mapView.w*rx, anchorY:mapView.y+mapView.h*ry };
+          mapDrag = null;
+        }
       });
       mapSvg.addEventListener('pointermove', event => {
-        if (!mapDrag) return;
+        if (!mapPointers.has(event.pointerId)) return;
+        mapPointers.set(event.pointerId, { x:event.clientX, y:event.clientY });
         const rect = mapSvg.getBoundingClientRect();
+        if (mapPointers.size === 2 && pinchStart) {
+          const [a,b] = [...mapPointers.values()];
+          const distance = Math.max(20, Math.hypot(a.x-b.x,a.y-b.y));
+          const center = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+          const rx = (center.x-rect.left)/rect.width;
+          const ry = (center.y-rect.top)/rect.height;
+          const w = Math.max(175, Math.min(800, pinchStart.view.w * pinchStart.distance/distance));
+          const h = w/(800/620);
+          setMapView({ x:Math.max(0,Math.min(800-w,pinchStart.anchorX-w*rx)), y:Math.max(0,Math.min(620-h,pinchStart.anchorY-h*ry)), w, h });
+          return;
+        }
+        if (!mapDrag) return;
         const dx = (event.clientX-mapDrag.x) * mapDrag.view.w/rect.width;
         const dy = (event.clientY-mapDrag.y) * mapDrag.view.h/rect.height;
         const x = Math.max(0, Math.min(800-mapDrag.view.w, mapDrag.view.x-dx));
         const y = Math.max(0, Math.min(620-mapDrag.view.h, mapDrag.view.y-dy));
         setMapView({...mapDrag.view, x, y});
       });
-      const endDrag = () => { mapDrag = null; mapEl.classList.remove('dragging'); };
+      const endDrag = event => {
+        mapPointers.delete(event.pointerId);
+        pinchStart = null;
+        if (mapPointers.size === 1) {
+          const [remaining] = [...mapPointers.values()];
+          mapDrag = { x:remaining.x, y:remaining.y, view:{...mapView} };
+        } else { mapDrag = null; mapEl.classList.remove('dragging'); }
+      };
       mapSvg.addEventListener('pointerup', endDrag);
       mapSvg.addEventListener('pointercancel', endDrag);
-      selectDay(1);
+      setMapMode('overview', false);
     }
 
-    function renderSelectedRoute(day) {
-      if (!mapSvg) return;
-      const group = document.getElementById('activeRoute');
-      const points = pointsString(day.coords);
-      const names = waypointNames[day.n] || [];
-      const chip = document.getElementById('mapDayChip');
-      chip.innerHTML = `<span>Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.distance)}</span><strong>${escapeText(day.title)}</strong>`;
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && chip.animate) chip.animate([{opacity:.35, transform:'translateY(-5px)'},{opacity:1, transform:'none'}], {duration:520, easing:'cubic-bezier(.22,.65,.3,1)'});
+    function clearDynamicMap() {
+      document.getElementById('detailTerrain').innerHTML = '';
+      document.getElementById('overviewRoutes').innerHTML = '';
+      document.getElementById('activeRoute').innerHTML = '';
       document.getElementById('mapPlaceCard').classList.remove('show');
-      renderElevation(day);
-      group.innerHTML = `<polyline class="active-route-casing" points="${points}"/><polyline class="active-route ${day.type === 'trek' ? 'trek' : ''}" points="${points}"/>` + day.coords.map((coord, idx) => {
-        const [x,y] = projectPoint(coord);
-        const isEnd = idx === day.coords.length-1;
-        const anchor = x > 625 ? 'end' : 'start';
-        const labelX = x > 625 ? x-17 : x+17;
-        return `<g class="route-marker ${isEnd ? 'end' : ''}" data-point-index="${idx}" tabindex="0" role="button" aria-label="Detail: ${escapeText(names[idx] || `Bod ${idx+1}`)}" style="animation-delay:${idx*.11}s" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><title>${escapeText(names[idx] || `Bod ${idx+1}`)}</title><circle r="11"/><text class="number" y=".5">${idx+1}</text><text class="place" x="${(labelX-x).toFixed(1)}" y="-15" text-anchor="${anchor}">${escapeText(names[idx] || '')}</text></g>`;
+      document.getElementById('map').classList.remove('place-open');
+      document.getElementById('mapElevation').classList.remove('trek-profile');
+    }
+
+    function animateMapPanel() {
+      const detail = document.getElementById('routeDetail');
+      const chip = document.getElementById('mapDayChip');
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        detail.animate?.([{opacity:.3, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:430, easing:'cubic-bezier(.22,.65,.3,1)'});
+        chip.animate?.([{opacity:.35, transform:'translateY(-5px)'},{opacity:1, transform:'none'}], {duration:430, easing:'cubic-bezier(.22,.65,.3,1)'});
+      }
+    }
+
+    function renderOverviewElevation() {
+      const values = [850,3016,1770,2950,3860,1770,2200,1607,850,630];
+      const coords = values.map((alt,index) => [6+index*(168/9), 44-((alt-600)/3400)*38]);
+      const line = coords.map(point => point.map(n => n.toFixed(1)).join(',')).join(' ');
+      document.getElementById('mapElevation').innerHTML = `<div class="map-elevation-head"><span>Profil celé cesty</span><b>3 860 m</b></div><svg class="elevation-mini" viewBox="0 0 180 50" aria-label="Orientační profil desetidenní cesty"><defs><linearGradient id="elevationFillMini" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3c8c92" stop-opacity=".3"/><stop offset="1" stop-color="#3c8c92" stop-opacity=".03"/></linearGradient></defs><polyline class="elevation-area" points="6,47 ${line} 174,47"/><polyline class="elevation-path" points="${line}"/></svg><div style="display:flex;justify-content:space-between;color:#78837f;font-size:8px"><span>Den 1</span><span>10 dní</span><span>Den 10</span></div>`;
+    }
+
+    function renderOverview() {
+      clearDynamicMap();
+      const layer = document.getElementById('overviewRoutes');
+      const routeOffsets = { 1:[0,3], 10:[0,-3], 3:[0,-2], 9:[0,2] };
+      layer.innerHTML = days.map(day => {
+        const [dx,dy] = routeOffsets[day.n] || [0,0];
+        return `<g class="overview-day-group" data-overview-day="${day.n}" transform="translate(${dx} ${dy})"><polyline class="overview-day-link" points="${pointsString(day.coords)}"/><polyline class="overview-segment ${day.type}" tabindex="0" role="button" aria-label="Zobrazit den ${day.n}: ${escapeText(day.title)}" points="${pointsString(day.coords)}"/></g>`;
+      }).join('') + days.map(day => {
+        const label = (waypointNames[day.n] || []).at(-1) || day.title;
+        return markerMarkup({ coord: day.coords.at(-1), label: `Den ${day.n} · ${label}`, number: day.n, classes: 'overview-marker', offset: overviewMarkerOffsets[day.n], data: `data-overview-marker="${day.n}"` });
       }).join('');
-      group.querySelectorAll('.route-marker').forEach(marker => {
-        const open = event => { event.stopPropagation(); showMapPlace(day, Number(marker.dataset.pointIndex)); };
+      layer.querySelectorAll('[data-overview-day]').forEach(group => {
+        const open = () => selectDay(Number(group.dataset.overviewDay));
+        group.addEventListener('click', open);
+        group.querySelector('.overview-segment').addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
+      });
+      layer.querySelectorAll('[data-overview-marker]').forEach(marker => {
+        const open = () => selectDay(Number(marker.dataset.overviewMarker));
+        marker.addEventListener('click', open);
+        marker.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
+      });
+      document.getElementById('mapDayChip').innerHTML = `<span class="chip-mode">Celý itinerář</span><strong>Všech 10 dní v jednom pohledu</strong>`;
+      document.getElementById('mapLegend').innerHTML = `<span class="legend-item"><i class="legend-line drive"></i>přejezd</span><span class="legend-item"><i class="legend-line hike"></i>trek</span><span>schematicky · ne pro navigaci</span>`;
+      document.getElementById('routeDetail').innerHTML = `<div class="route-meta">Celá cesta · dny 01–10</div><h3>Okruh bez hluchých míst</h3><p>Každé číslo označuje cíl jednoho dne. Kliknutím na bod nebo barevný úsek otevřete jeho detail.</p><div class="route-facts"><div class="route-fact"><span>Program</span><strong>10 dní</strong></div><div class="route-fact"><span>Po zemi</span><strong>~1 050 km</strong></div><div class="route-fact"><span>Hlavní trek</span><strong>3 dny</strong></div><div class="route-fact"><span>Maximum</span><strong>3 860 m</strong></div></div><div class="overview-progress">${days.map(day => `<button data-jump-day="${day.n}" aria-label="Otevřít den ${day.n}">${day.n}</button>`).join('')}</div>`;
+      document.querySelectorAll('[data-jump-day]').forEach(btn => btn.addEventListener('click', () => selectDay(Number(btn.dataset.jumpDay))));
+      renderOverviewElevation();
+      setMapView({x:0,y:0,w:800,h:620}, true);
+      animateMapPanel();
+    }
+
+    function renderDay(day) {
+      clearDynamicMap();
+      const group = document.getElementById('activeRoute');
+      const names = waypointNames[day.n] || [];
+      group.innerHTML = `<polyline class="active-route-casing" points="${pointsString(day.coords)}"/><polyline class="active-route ${day.type === 'trek' ? 'trek' : ''}" points="${pointsString(day.coords)}"/>` + day.coords.map((coord,idx) => markerMarkup({
+        coord, label: names[idx] || `Bod ${idx+1}`, number: idx+1,
+        classes: idx === day.coords.length-1 ? 'end' : '', labelAlways: idx === 0 || idx === day.coords.length-1,
+        data: `data-day-point="${idx}"`
+      })).join('');
+      group.querySelectorAll('[data-day-point]').forEach(marker => {
+        const idx = Number(marker.dataset.dayPoint);
+        const open = event => { event.stopPropagation(); showMapPlaceInfo({ type:`Den ${day.n} · bod ${idx+1}/${day.coords.length}`, name:names[idx] || `Bod ${idx+1}`, coord:day.coords[idx] }); };
         marker.addEventListener('click', open);
         marker.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
       });
+      document.getElementById('mapDayChip').innerHTML = `<span class="chip-mode">Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.distance)}</span><strong>${escapeText(day.title)}</strong>`;
+      document.getElementById('mapLegend').innerHTML = `<span class="legend-item"><i class="legend-line ${day.type === 'trek' ? 'hike' : 'drive'}"></i>${day.type === 'trek' ? 'pěší etapa' : 'trasa dne'}</span><span>schematicky · ne pro navigaci</span>`;
+      document.getElementById('routeDetail').innerHTML = `<div class="route-meta">Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.route)}</div><h3>${escapeText(day.title)}</h3><p>${escapeText(day.summary)}</p><div class="route-facts"><div class="route-fact"><span>Vzdálenost</span><strong>${escapeText(day.distance)}</strong></div><div class="route-fact"><span>Nocleh</span><strong>${escapeText(day.sleep)}</strong></div><div class="route-fact"><span>Přesun</span><strong>${escapeText(day.transport)}</strong></div><div class="route-fact"><span>Náročnost</span><strong>${escapeText(day.difficulty)}</strong></div></div>`;
+      renderElevation(day);
       focusMapOnDay(day);
+      animateMapPanel();
+    }
+
+    function renderTrekTerrain() {
+      const layer = document.getElementById('detailTerrain');
+      const [lx,ly] = projectPoint(alaKulPoints.lake.coord);
+      const [px,py] = projectPoint(alaKulPoints.pass.coord);
+      const river1 = alaKulStages[0].segments[1].coords;
+      const river2 = alaKulStages[2].segments[0].coords;
+      layer.innerHTML = `<ellipse class="detail-zone" cx="${(lx-3).toFixed(1)}" cy="${(ly+5).toFixed(1)}" rx="39" ry="62" transform="rotate(-14 ${lx-3} ${ly+5})"/><ellipse class="detail-contour" cx="${px}" cy="${py}" rx="25" ry="16"/><ellipse class="detail-contour" cx="${px}" cy="${py}" rx="34" ry="23"/><ellipse class="detail-contour" cx="${px}" cy="${py}" rx="44" ry="31"/><polyline class="detail-river" points="${pointsString(river1)}"/><polyline class="detail-river" points="${pointsString(river2)}"/><ellipse class="detail-lake" cx="${lx}" cy="${ly}" rx="6.5" ry="2.8" transform="rotate(-16 ${lx} ${ly})"/>`;
+    }
+
+    function renderTrek(stageId = 'all') {
+      clearDynamicMap();
+      renderTrekTerrain();
+      const selected = stageId === 'all' ? alaKulStages : alaKulStages.filter(stage => stage.id === Number(stageId));
+      const routeGroup = document.getElementById('activeRoute');
+      routeGroup.innerHTML = alaKulStages.map(stage => `<g class="trek-stage-group ${stageId !== 'all' && Number(stageId) !== stage.id ? 'dimmed' : ''}" data-stage-group="${stage.id}">${stage.segments.map(segment => `<polyline class="trek-stage-casing" points="${pointsString(segment.coords)}"/><polyline class="trek-stage-line stage-${stage.id} ${segment.mode}" data-stage-line="${stage.id}" tabindex="0" role="button" aria-label="Zobrazit etapu ${stage.id}: ${escapeText(stage.title)}" points="${pointsString(segment.coords)}"/>`).join('')}</g>`).join('');
+      const pointKeys = [...new Set(selected.flatMap(stage => stage.points))];
+      routeGroup.innerHTML += pointKeys.filter(key => alaKulPoints[key].offset).map(key => {
+        const point = alaKulPoints[key];
+        const [x,y] = projectPoint(point.coord);
+        return `<line class="marker-leader" x1="${x}" y1="${y}" x2="${x+point.offset[0]}" y2="${y+point.offset[1]}"/>`;
+      }).join('') + pointKeys.map((key,idx) => {
+        const point = alaKulPoints[key];
+        const keyClass = ['sirota','lake','pass','altyn','aksuu'].includes(key) ? 'trek-key' : '';
+        const always = ['sirota','lake','pass','altyn'].includes(key);
+        return markerMarkup({ coord:point.coord, label:`${point.name} · ${point.alt} m`, number:idx+1, classes:`${keyClass} ${point.kind} ${key === pointKeys.at(-1) ? 'end' : ''}`, labelAlways:always, labelPosition:point.label, offset:point.offset || [0,0], data:`data-trek-point="${key}"` });
+      }).join('');
+      routeGroup.querySelectorAll('[data-stage-line]').forEach(line => {
+        const open = event => { event.stopPropagation(); selectTrekStage(line.dataset.stageLine); };
+        line.addEventListener('click', open);
+        line.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
+      });
+      routeGroup.querySelectorAll('[data-trek-point]').forEach(marker => {
+        const point = alaKulPoints[marker.dataset.trekPoint];
+        const open = event => { event.stopPropagation(); showMapPlaceInfo({ type:`Ala-Kul trek · ${point.alt} m`, name:point.name, coord:point.coord, detail:point.note }); };
+        marker.addEventListener('click', open);
+        marker.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
+      });
+      const allCoords = selected.flatMap(stage => stage.segments.flatMap(segment => segment.coords));
+      if (stageId === 'all') {
+        document.getElementById('routeDetail').innerHTML = `<div class="route-meta">Ala-Kul · dny 04–06</div><h3>Tři dny přes srdce hor</h3><p>Barvy oddělují jednotlivé etapy. Kliknutím na etapu nebo waypoint zobrazíte detail; tečkovaná část označuje transfer autem.</p><div class="route-facts"><div class="route-fact"><span>Celkem</span><strong>49–55 km</strong></div><div class="route-fact"><span>Maximum</span><strong>3 860 m</strong></div><div class="route-fact"><span>Noci</span><strong>2 v horách</strong></div><div class="route-fact"><span>Obtížnost</span><strong>Náročná</strong></div></div>`;
+        document.getElementById('mapDayChip').innerHTML = `<span class="chip-mode">Ala-Kul · kompletní trek</span><strong>3 dny · Karakol → Altyn Arashan → Ak-Suu</strong>`;
+      } else {
+        const stage = selected[0];
+        const day = days[stage.day-1];
+        document.getElementById('routeDetail').innerHTML = `<div class="route-meta">Trek ${stage.id}/3 · den ${stage.day}</div><h3>${escapeText(stage.title)}</h3><p>${escapeText(day.summary)}</p><div class="route-facts"><div class="route-fact"><span>Vzdálenost</span><strong>${escapeText(stage.distance)}</strong></div><div class="route-fact"><span>Čas</span><strong>${escapeText(stage.time)}</strong></div><div class="route-fact"><span>Stoupání</span><strong>${escapeText(stage.gain)}</strong></div><div class="route-fact"><span>Nocleh</span><strong>${escapeText(day.sleep)}</strong></div></div>`;
+        document.getElementById('mapDayChip').innerHTML = `<span class="chip-mode">Ala-Kul · etapa ${stage.id}/3</span><strong>${escapeText(stage.title)}</strong>`;
+      }
+      document.getElementById('mapLegend').innerHTML = `<span class="legend-item"><i class="legend-line stage1"></i>den 1</span><span class="legend-item"><i class="legend-line stage2"></i>den 2</span><span class="legend-item"><i class="legend-line stage3"></i>den 3</span><span>schematicky</span>`;
+      renderTrekElevation(stageId);
+      focusMapOnCoords(allCoords, { minWidth: stageId === 'all' ? 245 : 190, paddingX: stageId === 'all' ? 120 : 105, paddingY: 115 });
+      animateMapPanel();
+    }
+
+    function setMapMode(mode, animate = true) {
+      currentMapMode = mode;
+      document.querySelectorAll('[data-map-mode]').forEach(btn => {
+        const active = btn.dataset.mapMode === mode;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
+      document.getElementById('trekStagePicker').hidden = mode !== 'trek';
+      document.querySelectorAll('[data-trek-stage]').forEach(btn => btn.setAttribute('aria-pressed', String(mode === 'trek' && btn.dataset.trekStage === String(currentTrekStage))));
+      document.querySelectorAll('.day-dot').forEach(btn => {
+        const n = Number(btn.dataset.mapDay);
+        btn.classList.toggle('active', mode === 'day' && n === currentMapDay);
+        btn.classList.toggle('trek-selected', mode === 'trek' && n >= 4 && n <= 6);
+        btn.setAttribute('aria-pressed', String(mode === 'day' && n === currentMapDay));
+      });
+      if (mode === 'overview') renderOverview();
+      else if (mode === 'trek') renderTrek(currentTrekStage);
+      else renderDay(days[currentMapDay-1]);
+      if (!animate) setMapView({...mapTargetView}, 0);
     }
 
     function selectDay(n) {
-      const day = days.find(d => d.n === n);
-      document.querySelectorAll('.day-dot').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.mapDay) === n));
-      const detail = document.getElementById('routeDetail');
-      detail.innerHTML = `<div class="route-meta">Den ${String(day.n).padStart(2,'0')} · ${escapeText(day.route)}</div><h3>${escapeText(day.title)}</h3><p>${escapeText(day.summary)}</p><div class="route-facts"><div class="route-fact"><span>Vzdálenost</span><strong>${escapeText(day.distance)}</strong></div><div class="route-fact"><span>Nocleh</span><strong>${escapeText(day.sleep)}</strong></div><div class="route-fact"><span>Přesun</span><strong>${escapeText(day.transport)}</strong></div><div class="route-fact"><span>Náročnost</span><strong>${escapeText(day.difficulty)}</strong></div></div>`;
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches && detail.animate) detail.animate([{opacity:.25, transform:'translateY(6px)'},{opacity:1, transform:'none'}], {duration:520, easing:'cubic-bezier(.22,.65,.3,1)'});
-      renderSelectedRoute(day);
+      currentMapDay = n;
+      setMapMode('day');
+    }
+
+    function selectTrekStage(stageId) {
+      currentTrekStage = stageId;
+      document.querySelectorAll('[data-trek-stage]').forEach(btn => {
+        const active = btn.dataset.trekStage === String(stageId);
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
+      renderTrek(stageId);
     }
 
     function setupMotion() {
